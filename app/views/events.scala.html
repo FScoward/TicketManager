@@ -1,0 +1,13 @@
+@(eventList: List[models.database.Event])
+@main("event list") {
+
+<div class="list-group">
+  @for(event <- eventList) {
+    
+    <a href="#" class="list-group-item">
+        <h4 class="list-group-item-heading">@event.eventName - @event.eventDate</h4>
+        <p class="list-group-item-text">...</p>
+    </a>
+  }
+</div>
+}
