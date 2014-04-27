@@ -10,7 +10,8 @@ libraryDependencies ++= Seq(
   cache,
   "org.webjars" %% "webjars-play" % "2.2.1-2",
   "org.webjars" % "bootstrap" % "3.1.1",
-  "com.typesafe.slick" %% "slick" % "2.0.0"
+  "com.typesafe.slick" %% "slick" % "2.0.0",
+  "org.twitter4j" % "twitter4j-core" % "4.0.1"
 )     
 
 play.Project.playScalaSettings
