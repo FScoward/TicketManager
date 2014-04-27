@@ -8,16 +8,16 @@ import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
 import models.database.{Event, Events}
+import play.api.libs.Crypto
 
 object EventController extends Controller {
   
   val createEventForm = Form(
-    mapping(
+    tuple(
       "eventName" -> text,
       "eventDate" -> sqlDate,
-      "isPrivate" -> boolean,
-      "eventId" -> optional(number)
-    )(Event.apply)(Event.unapply)
+      "isPrivate" -> boolean
+    )
   )
   
   def index = Action {
@@ -30,7 +30,9 @@ object EventController extends Controller {
         Ok(views.html.createEvent())
       },
       success => {
-        Events.insert(Event(success.eventName, new java.sql.Date(success.eventDate.getTime), success.isPrivate))
+        val (eventName, eventDate, isPrivate) = success
+        val eventId = Crypto.sign(eventName + eventDate)
+        Events.insert(Event(eventId, eventName, new java.sql.Date(eventDate.getTime), isPrivate))
         Redirect(routes.EventController.viewEventList)
       }
     )
@@ -41,8 +43,13 @@ object EventController extends Controller {
     Ok(views.html.events(eventList))
   }
   
-  def viewEvent(eventId: Int) = Action {
-    Ok("event id : " + eventId)
+  def viewEvent(eventId: String) = Action {
+    val event = Events.findEventById(eventId)
+    if(event.size == 1){
+      Ok(views.html.event(event.head))
+    }else{
+      BadRequest
+    }
   }
   
 }

@@ -4,10 +4,14 @@
 <div class="list-group">
   @for(event <- eventList) {
     
-    <a href="#" class="list-group-item">
+    <a href="@routes.EventController.viewEvent(event.eventId)" class="list-group-item">
         <h4 class="list-group-item-heading">@event.eventName - @event.eventDate</h4>
         <p class="list-group-item-text">...</p>
     </a>
+    
+    <form method="post" action="routes.EventController.viewEvent(event.eventId.get)">
+        <button type="submit">submit</button>
+    </form>
   }
 </div>
 }
