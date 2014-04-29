@@ -39,7 +39,7 @@ object EventController extends Controller {
     )
   }
   
-  def viewEventList = Action {
+  def viewEventList = Action { implicit request =>
     val eventList = models.database.Events.read
     Ok(views.html.events(eventList))
   }

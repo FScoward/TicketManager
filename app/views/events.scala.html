@@ -1,6 +1,7 @@
-@(eventList: List[models.database.Event])
+@(eventList: List[models.database.Event])(implicit request: RequestHeader)
 @main("event list") {
-
+    @request.session.get("screenName").get
+    
 <div class="list-group">
   @for(event <- eventList) {
     

@@ -6,29 +6,37 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import twitter4j.{TwitterFactory}
+import twitter4j.{TwitterException, TwitterFactory}
 import play.api.cache.Cache
 import play.api.Play.current
 import java.util.UUID
 
 object LoginController extends Controller {
-  def login = Action {
+  
+  def login = Action { implicit request =>
     val twitter = TwitterFactory.getSingleton
-    Ok
+    try{
+      val requestToken = twitter.getOAuthRequestToken
+      val url = requestToken.getAuthorizationURL
+      Redirect(url)
+    }catch {
+      case e: TwitterException => Unauthorized
+      case e: IllegalStateException => Unauthorized
+    }
+  }
+  
+  def logout = Action { implicit request =>
+    Cache.remove("twitter")
+    Redirect(routes.Application.index()).withNewSession
   }
 
   def callback = Action { request =>
     val oauthVerifier = request.getQueryString("oauth_verifier").get
-
     val twitter = TwitterFactory.getSingleton
     val accessToken = twitter.getOAuthAccessToken(oauthVerifier)
-
-    play.Logger.debug(twitter.getScreenName)
-
     val uuid = UUID.randomUUID.toString
-
-    Cache.set(uuid, twitter)
-
-    Redirect(routes.Application.index()).withSession("twitter" -> uuid)
+    Cache.set(uuid, accessToken)
+    
+    Redirect(routes.Application.index()).withSession("twitter" -> uuid, "screenName" -> twitter.getScreenName)
   }
 }
