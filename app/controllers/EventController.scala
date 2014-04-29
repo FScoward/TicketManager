@@ -32,6 +32,7 @@ object EventController extends Controller {
       success => {
         val (eventName, eventDate, isPrivate) = success
         val eventId = Crypto.sign(eventName + eventDate)
+        play.Logger.debug("eventID: " + eventId + " || Length: " + eventId.size)
         Events.insert(Event(eventId, eventName, new java.sql.Date(eventDate.getTime), isPrivate))
         Redirect(routes.EventController.viewEventList)
       }

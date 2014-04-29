@@ -9,6 +9,8 @@ GET     /event/list                 controllers.EventController.viewEventList
 
 GET     /event/:eventId             controllers.EventController.viewEvent(eventId: String)
 
+GET     /callback                   controllers.LoginController.callback
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
