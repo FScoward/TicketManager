@@ -7,10 +7,12 @@ import play.api._
 import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
-import models.database.{Event, Events}
+import models.database.{EventMembers, Event, Events}
 import play.api.libs.Crypto
+import models.filter.AuthAction
+import play.api.mvc.Security.Authenticated
 
-object EventController extends Controller {
+object EventController extends Controller with AuthAction{
   
   val createEventForm = Form(
     tuple(
@@ -20,11 +22,11 @@ object EventController extends Controller {
     )
   )
   
-  def index = Action {
+  def index = AuthAction { uuid => implicit request =>
     Ok(views.html.createEvent())
   }
 
-  def create = Action { implicit request =>
+  def create = AuthAction { uuid => implicit request =>
     createEventForm.bindFromRequest.fold(
       hasErrors => {
         Ok(views.html.createEvent())
@@ -33,7 +35,11 @@ object EventController extends Controller {
         val (eventName, eventDate, isPrivate) = success
         val eventId = Crypto.sign(eventName + eventDate)
         play.Logger.debug("eventID: " + eventId + " || Length: " + eventId.size)
-        Events.insert(Event(eventId, eventName, new java.sql.Date(eventDate.getTime), isPrivate))
+//        Events.insert(Event(eventId, eventName, new java.sql.Date(eventDate.getTime), isPrivate))
+        val event = Event(eventId, eventName, new java.sql.Date(eventDate.getTime), isPrivate)
+        EventMembers.insert(event, request.session.get("screenName").get)
+
+
         Redirect(routes.EventController.viewEventList)
       }
     )
@@ -44,7 +50,7 @@ object EventController extends Controller {
     Ok(views.html.events(eventList))
   }
   
-  def viewEvent(eventId: String) = Action {
+  def viewEvent(eventId: String) = AuthAction { uuid => implicit request =>
     val event = Events.findEventById(eventId)
     if(event.size == 1){
       Ok(views.html.event(event.head))

@@ -1,3 +1,4 @@
+@(screenName: Option[String])
 @main("Welcome to Play") {
 
     <h1>Ticket Management</h1>
@@ -7,7 +8,16 @@
         <p>Ticket Manager is ticket management system.</p>
     </blockquote>
 
-    <a href="/login">login</a>
-    Login
+        @screenName match {
+            case Some(s) => {
+                @s
+                <br/>
+                <a href="/logout">logout</a>
+            }
+            case None => {
+                Login
+                <a href="/login">login</a>
+            }
+        }
 
 }

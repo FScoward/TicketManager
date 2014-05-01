@@ -6,9 +6,9 @@ package models
 trait Authority {
   def toString: String
 }
-case class Normal extends Authority {
+case class Normal() extends Authority {
   override def toString = "Normal"
 }
-case class Administrator extends Authority {
+case class Administrator() extends Authority {
   override def toString = "Administrator"
 }

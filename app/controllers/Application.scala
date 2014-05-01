@@ -5,8 +5,9 @@ import play.api.mvc._
 
 object Application extends Controller {
 
-  def index = Action {
-    Ok(views.html.index())
+  def index = Action { implicit request =>
+    val screenName: Option[String] = request.session.get("screenName")
+    Ok(views.html.index(screenName))
   }
 
 }

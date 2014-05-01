@@ -20,8 +20,8 @@ object LoginController extends Controller {
       val url = requestToken.getAuthorizationURL
       Redirect(url)
     }catch {
-      case e: TwitterException => Unauthorized
-      case e: IllegalStateException => Unauthorized
+      case e: TwitterException => Unauthorized(e.getMessage)
+      case e: IllegalStateException => Unauthorized(e.getMessage)
     }
   }
   
@@ -31,12 +31,19 @@ object LoginController extends Controller {
   }
 
   def callback = Action { request =>
+    // TODO -- キャンセルで戻ってきた時にNone.getでエラー
     val oauthVerifier = request.getQueryString("oauth_verifier").get
     val twitter = TwitterFactory.getSingleton
     val accessToken = twitter.getOAuthAccessToken(oauthVerifier)
     val uuid = UUID.randomUUID.toString
     Cache.set(uuid, accessToken)
-    
-    Redirect(routes.Application.index()).withSession("twitter" -> uuid, "screenName" -> twitter.getScreenName)
+    val screenName = twitter.getScreenName
+    twitter.setOAuthAccessToken(null)
+
+    if(models.database.Accounts.findAccountByAccount(screenName) == 0){
+      models.database.Accounts.insert(models.database.Account(screenName))
+    }
+
+    Redirect(routes.UserController.index(screenName)).withSession("twitter" -> uuid, "screenName" -> screenName)
   }
 }

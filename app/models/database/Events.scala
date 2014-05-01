@@ -34,4 +34,14 @@ object Events {
   def findEventById(eventId: String) = database.withSession { implicit session: Session =>
     events.where(_.eventId === eventId).list
   }
+
+  def findEventByAccountId(accountId: Int) = database.withSession { implicit session: Session =>
+    val query = for{
+      e <- events
+      m <- Accounts.accounts filter(_.accountId === accountId)
+      em <- EventMembers.eventMembers
+    } yield (e.eventName)
+
+    query.list()
+  }
 }

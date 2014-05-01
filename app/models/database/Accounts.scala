@@ -14,10 +14,18 @@ case class Account(account: String, accountId: Option[Int] = None)
 object Accounts {
   val database = Database.forDataSource(DB.getDataSource())
 
-  class Accounts(tag: Tag) extends Table[Account](tag, "EVENT") {
-    def account = column[String]("ACCOUNT", O NotNull)
+  class Accounts(tag: Tag) extends Table[Account](tag, "ACCOUNT") {
+    def account = column[String]("ACCOUNT", O NotNull, O PrimaryKey)
     def accountId = column[Option[Int]]("ACCOUNT_ID", O AutoInc)
     def * = (account, accountId) <> (Account.tupled, Account.unapply)
   }
   val accounts = TableQuery[Accounts]
+
+  def insert(account: Account) = database.withSession { implicit session: Session =>
+    accounts.insert(account)
+  }
+
+  def findAccountByAccount(account: String) = database.withSession { implicit session: Session =>
+    accounts.where(_.account === account).list().size
+  }
 }
