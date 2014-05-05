@@ -7,6 +7,7 @@ GET     /                           controllers.Application.index
 GET     /event/create               controllers.EventController.create
 GET     /event/list                 controllers.EventController.viewEventList
 GET     /event/:eventId             controllers.EventController.viewEvent(eventId: String)
+POST    /event/:eventId             controllers.EventController.attend(eventId: String)
 
 
 GET     /callback                   controllers.LoginController.callback

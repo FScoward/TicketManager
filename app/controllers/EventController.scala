@@ -50,13 +50,33 @@ object EventController extends Controller with AuthAction{
     Ok(views.html.events(eventList))
   }
   
-  def viewEvent(eventId: String) = AuthAction { uuid => implicit request =>
+  def viewEvent(eventId: String) = Action { implicit request =>
     val event = Events.findEventById(eventId)
+    val accountList: List[String] = EventMembers.findAccountByEventId(eventId)
+
     if(event.size == 1){
-      Ok(views.html.event(event.head))
+      Ok(views.html.event(event.head, accountList))
     }else{
       BadRequest
     }
   }
-  
+
+  def attend(eventId: String) = AuthAction { uuid => implicit request =>
+
+    val status = request.body.asFormUrlEncoded.get("status").head
+
+    play.Logger.debug(status)
+
+
+
+
+
+
+    // EventMembers の更新 key = event id + account name
+//    EventMembers.
+
+
+    Redirect(routes.EventController.viewEvent(eventId))
+  }
+
 }

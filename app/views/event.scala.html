@@ -1,7 +1,22 @@
-@(event: models.database.Event)
+@(event: models.database.Event, accountList: List[String])
 @main("event") {
 
-    @event
-    add member
+    <div class="page-header">
+        <h1>@event.eventName  <small>@event.eventDate</small></h1>
+    </div>
+
+
+    参加メンバー一覧<br/>
+    @for(account <- accountList){
+        @account
+    }
+
+    <form method="post" action="@routes.EventController.viewEvent(event.eventId)">
+        <p>
+            <button type="submit" name="status" class="btn btn-success btn-lg btn-block" value="attend">参加</button>
+            <button type="submit" name="status" class="btn btn-danger btn-lg btn-block" value="absence">不参加</button>
+            <button type="submit" name="status" class="btn btn-warning btn-lg btn-block" value="undecided">未定</button>
+        </p>
+    </form>
 
 }
