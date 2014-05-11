@@ -1,7 +1,13 @@
-@(eventList: List[models.database.Event])(implicit rquest: RequestHeader)
+@(eventList: List[models.database.Event])(implicit rquest: RequestHeader, flash: Flash)
 @main("event list") {
 
-<div class="list-group">
-    @template.eventList(eventList)
-</div>
+    <div class="page-header">
+        <h1>
+            Public Event List
+        </h1>
+    </div>
+
+    <div class="list-group">
+        @template.eventList(eventList)
+    </div>
 }

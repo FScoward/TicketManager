@@ -1,12 +1,8 @@
-@(screenName: Option[String])(implicit rquest: RequestHeader)
+@(screenName: Option[String])(implicit rquest: RequestHeader, flash: Flash)
 @main("Ticket Manager") {
-
-    <h1>Ticket Management</h1>
-
-    
-    <blockquote>
-        <p>Ticket Manager is ticket management system.</p>
-    </blockquote>
+    <div class="jumbotron">
+        <h1>Ticket Manager</h1>
+        <p>This is ticket management system.</p>
 
         @screenName match {
             case Some(s) => {
@@ -20,5 +16,5 @@
                 </a>
             }
         }
-
+    </div>
 }

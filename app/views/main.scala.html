@@ -1,4 +1,4 @@
-@(title: String)(content: Html)(implicit request: RequestHeader)
+@(title: String)(content: Html)(implicit request: RequestHeader, flash: Flash)
 
 <!DOCTYPE html>
 
@@ -88,6 +88,18 @@
                     </ul>
                 </div>
             </nav>
+
+
+
+    @*** if form has error ***@
+    @if(!flash.isEmpty){
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>@flash.get("errorMessages")</strong>
+        </div>
+    }
+
+
 
         @*** body ***@
 

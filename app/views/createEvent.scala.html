@@ -1,4 +1,4 @@
-@()(implicit request: RequestHeader)
+@()(implicit request: RequestHeader, flash: Flash)
 @main("create new event") {
     <form class="form-horizontal" role="form">
         
@@ -19,7 +19,7 @@
         <div class="form-group">
             <label for="date" class="col-sm-2 control-label">Date</label>
             <div class="col-sm-10">
-                <input type="date" id="date" name="eventDate" placeholder="YYYY/MM/DD" required>
+                <input type="date" id="date" name="eventDate" placeholder="YYYY-MM-DD" required>
             </div>
         </div>
         

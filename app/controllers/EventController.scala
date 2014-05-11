@@ -13,6 +13,7 @@ import models.filter.AuthAction
 import play.api.mvc.Security.Authenticated
 import models.database.Event
 import models.database.EventMember
+import play.api.i18n.Messages
 
 object EventController extends Controller with AuthAction{
   
@@ -34,20 +35,20 @@ object EventController extends Controller with AuthAction{
    * */
   def create = AuthAction { uuid => implicit request =>
     createEventForm.bindFromRequest.fold(
-      hasErrors => {
-        Ok(views.html.createEvent())
+      hasError => {
+        val errorMessages = hasError.errors.map{x =>
+          x.key + " : " + Messages(x.message)
+        }
+
+        Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> errorMessages.mkString)
       },
       success => {
         val (eventName, eventLocation, eventDate, isPrivate) = success
         val eventId = Crypto.sign(eventName + eventLocation + eventDate)
-        play.Logger.debug("eventID: " + eventId + " || Length: " + eventId.size)
-//        Events.insert(Event(eventId, eventName, new java.sql.Date(eventDate.getTime), isPrivate))
         val event = Event(eventId, eventName, eventLocation, new java.sql.Date(eventDate.getTime), isPrivate)
         EventMembers.insert(event, request.session.get("screenName").get)
 
-//        Redirect(routes.EventController.viewEventList)
-        Redirect(routes.UserController.index(uuid))
-
+        Redirect(routes.EventController.viewEvent(eventId))
       }
     )
   }
