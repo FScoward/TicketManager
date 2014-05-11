@@ -77,7 +77,8 @@
                                     </a>
                                 </li>
 
-                                <li><a href="/event/list">Event List</a></li>
+                                //<li><a href="/event/list?page=0">Event List</a></li>
+                                <li><a href={routes.EventController.viewEventList(0).toString}>Event List</a></li>
 
                                 <li><a href={url}>{x}</a></li>
                                 <li><a href="/logout">Logout</a></li>

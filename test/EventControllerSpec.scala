@@ -21,8 +21,8 @@ class EventControllerSpec extends Specification {
 */
   "EventController#findByScreenName(FF)" should {
     "return list" in new WithApplication() {
-      models.database.Events.findEventByScreenName("FF").size === 0
-      models.database.Events.findEventByScreenName("FScoward").size === 2
+      models.database.Events.findEventByScreenName("FF", 0).size === 0
+      models.database.Events.findEventByScreenName("FScoward", 0).size === 2
     }
   }
 }

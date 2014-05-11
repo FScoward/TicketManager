@@ -10,7 +10,7 @@ import models.filter.AuthAction
 import models.database.{Accounts, Events}
 
 object UserController extends Controller with AuthAction {
-  def index(username: String) = AuthAction { uuid => implicit request =>
+  def index(username: String, page: Int) = AuthAction { uuid => implicit request =>
     /*
     * TODO
     * ユーザー名をAccountテーブルから検索
@@ -20,7 +20,7 @@ object UserController extends Controller with AuthAction {
 
     // get owner event list
 
-    val eventList = Events.findEventByScreenName(username)
+    val eventList = Events.findEventByScreenName(username, page - 1)
 
 
 

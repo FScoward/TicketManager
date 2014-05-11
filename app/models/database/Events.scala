@@ -28,21 +28,21 @@ object Events {
     events.insert(event)
   }
   
-  def read = database.withSession { implicit session: Session =>
-    events.where(_.isPrivate === false).list
+  def read(page: Int) = database.withSession { implicit session: Session =>
+    events.where(_.isPrivate === false).drop(page * 10).take(10).list
   }
   
   def findEventById(eventId: String) = database.withSession { implicit session: Session =>
     events.where(_.eventId === eventId).list
   }
 
-  def findEventByScreenName(screenName: String) = database.withSession { implicit session: Session =>
+  def findEventByScreenName(screenName: String, page: Int) = database.withSession { implicit session: Session =>
     val query = for{
       m <- Accounts.accounts if (m.account === screenName)
       em <- EventMembers.eventMembers if (em.account === screenName)
       e <- events if (e.eventId === em.eventId) && (em.account === screenName)
     } yield (e)
 
-    query.list()
+    query.drop(page * 10).take(10).list()
   }
 }

@@ -5,7 +5,7 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /event/create               controllers.EventController.create
-GET     /event/list                 controllers.EventController.viewEventList
+GET     /event/list                 controllers.EventController.viewEventList(page: Int ?= 1)
 GET     /event/:eventId             controllers.EventController.viewEvent(eventId: String)
 POST    /event/:eventId             controllers.EventController.attend(eventId: String)
 GET     /event/:eventId/ticket      controllers.TicketController.createTicket(eventId: String)
@@ -15,7 +15,7 @@ GET     /callback                   controllers.LoginController.callback
 GET     /login                      controllers.LoginController.login
 GET     /logout                     controllers.LoginController.logout
 
-GET     /:username                  controllers.UserController.index(username: String)
+GET     /:username             controllers.UserController.index(username: String, page: Int ?= 1)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

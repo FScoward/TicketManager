@@ -56,8 +56,8 @@ object EventController extends Controller with AuthAction{
   /**
    * event list page
    * */
-  def viewEventList = Action { implicit request =>
-    val eventList = models.database.Events.read
+  def viewEventList(page: Int) = Action { implicit request =>
+    val eventList = models.database.Events.read(page - 1)
     Ok(views.html.events(eventList))
   }
 

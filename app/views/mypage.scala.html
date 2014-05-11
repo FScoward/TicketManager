@@ -1,9 +1,17 @@
 @(screenName: Option[String], eventList: List[models.database.Event])(implicit rquest: RequestHeader, flash: Flash)
-@main("user page") {
+@main("Personal Page") {
 
     <div class="page-header">
         <h1>Personal Page</h1>
     </div>
 
     @template.eventList(eventList)
+
+    <ul class="pagination">
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+        ...
+    </ul>
+
+
 }
