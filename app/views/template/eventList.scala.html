@@ -1,0 +1,7 @@
+@(eventList: List[models.database.Event])
+@for(event <- eventList) {
+    <a href="@routes.EventController.viewEvent(event.eventId)" class="list-group-item">
+        <h4 class="list-group-item-heading">@event.eventName - @event.eventDate</h4>
+        <p class="list-group-item-text">At @event.eventLocation</p>
+    </a>
+}

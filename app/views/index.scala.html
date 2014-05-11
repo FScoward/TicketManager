@@ -1,4 +1,4 @@
-@(screenName: Option[String])
+@(screenName: Option[String])(implicit rquest: RequestHeader)
 @main("Welcome to Play") {
 
     <h1>Ticket Management</h1>
@@ -15,8 +15,9 @@
                 <a href="/logout">logout</a>
             }
             case None => {
-                Login
-                <a href="/login">login</a>
+                <a href="/login">
+                    <img src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" alt="Login">
+                </a>
             }
         }
 

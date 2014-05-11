@@ -1,14 +1,7 @@
-@(eventList: List[models.database.Event])(implicit request: RequestHeader)
+@(eventList: List[models.database.Event])(implicit rquest: RequestHeader)
 @main("event list") {
-    @request.session.get("screenName").get
-    
+
 <div class="list-group">
-  @for(event <- eventList) {
-    
-    <a href="@routes.EventController.viewEvent(event.eventId)" class="list-group-item">
-        <h4 class="list-group-item-heading">@event.eventName - @event.eventDate</h4>
-        <p class="list-group-item-text">...</p>
-    </a>
-  }
+    @template.eventList(eventList)
 </div>
 }

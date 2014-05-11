@@ -26,6 +26,6 @@ object Accounts {
   }
 
   def findAccountByAccount(account: String) = database.withSession { implicit session: Session =>
-    accounts.where(_.account === account).list().size
+    accounts.where(_.account === account).list()
   }
 }

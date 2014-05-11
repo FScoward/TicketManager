@@ -40,7 +40,8 @@ object LoginController extends Controller {
     val screenName = twitter.getScreenName
     twitter.setOAuthAccessToken(null)
 
-    if(models.database.Accounts.findAccountByAccount(screenName) == 0){
+    play.Logger.debug(screenName)
+    if(models.database.Accounts.findAccountByAccount(screenName).size == 0){
       models.database.Accounts.insert(models.database.Account(screenName))
     }
 

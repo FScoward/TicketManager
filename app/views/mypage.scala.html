@@ -1,7 +1,9 @@
-@(screenName: Option[String])
+@(screenName: Option[String], eventList: List[models.database.Event])(implicit rquest: RequestHeader)
 @main("user page") {
     user page
 
     <a href="/event/create">create</a>
     <a href="/event/list">list</a>
+
+    @template.eventList(eventList)
 }

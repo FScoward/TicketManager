@@ -6,13 +6,17 @@ package models.database
 import play.api.db.DB
 import scala.slick.driver.H2Driver.simple._
 import play.api.Play.current
+import org.joda.time.LocalDateTime
+import com.github.tototoshi.slick.H2JodaSupport._
 
 sealed abstract class AttendStatus
 case object Attendance extends AttendStatus
 case object Absense extends AttendStatus
 case object Undecide extends AttendStatus
 
-case class EventMember(eventId: String, account: String, authority: String, attendStatus: Int = 0)
+case class EventMember(eventId: String, account: String, authority: String,
+                       attendStatus: Int = 0, updateDate: LocalDateTime = new LocalDateTime)
+
 object EventMembers {
   val database = Database.forDataSource(DB.getDataSource())
 
@@ -21,9 +25,11 @@ object EventMembers {
     def account = column[String]("ACCOUNT")
     def authority = column[String]("AUTHORITY")
     def attendStatus = column[Int]("ATTEND_STATUS")
+    def updateDate = column[LocalDateTime]("UPDATE_DATE")
+
     def eventFK = foreignKey("event_fk", eventId, Events.events)(_.eventId)
     def accountFK = foreignKey("account_fk", account, Accounts.accounts)(_.account)
-    def * = (eventId, account, authority, attendStatus) <> (EventMember.tupled, EventMember.unapply)
+    def * = (eventId, account, authority, attendStatus, updateDate) <> (EventMember.tupled, EventMember.unapply)
   }
 
   val eventMembers = TableQuery[EventMembers]
@@ -34,7 +40,16 @@ object EventMembers {
   }
 
   def findAccountByEventId(eventId: String) = database.withSession { implicit session: Session =>
-    eventMembers.where(_.eventId === eventId).list().map(_.account)
+    try{
+      eventMembers
+        .where(_.eventId === eventId)
+  //      .where(_.attendStatus === 1)
+        .list()
+  //      .map(_.account)
+    }catch{
+      case e: SlickException => Nil
+    }
+
   }
 
   def updateStatus(eventId: String, account: String, attendStatus: String) = database.withTransaction { implicit session: Session =>
@@ -44,9 +59,13 @@ object EventMembers {
       case "undecided" => 3
     }
 
-    eventMembers
+    val result: Int = eventMembers
       .filter(_.eventId === eventId)
       .filter(_.account === account)
-      .update(EventMember(eventId, account, code))
+      .update(EventMember(eventId, account, "Normal", code, new LocalDateTime))
+
+    if(result == 0){
+      eventMembers.insert(EventMember(eventId, account, "Normal", code))
+    }
   }
 }

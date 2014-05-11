@@ -10,11 +10,19 @@ import play.api.test.Helpers._
 
 @RunWith(classOf[JUnitRunner])
 class EventControllerSpec extends Specification {
+ /*
   "EventController" should {
     "render the create page" in new WithApplication() {
       val page = route(FakeRequest(GET, "/event/create")).get
       
       status(page) must equalTo(OK)
+    }
+  }
+*/
+  "EventController#findByScreenName(FF)" should {
+    "return list" in new WithApplication() {
+      models.database.Events.findEventByScreenName("FF").size === 0
+      models.database.Events.findEventByScreenName("FScoward").size === 2
     }
   }
 }

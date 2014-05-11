@@ -1,15 +1,77 @@
-@(event: models.database.Event, accountList: List[String])
+@(event: models.database.Event,
+    accountList: Map[Int, List[models.database.EventMember]],
+    ticketInfo: List[models.database.Ticket])(implicit request: RequestHeader, flash: Flash)
+
+@display(accounts: Option[List[models.database.EventMember]], style: String) = {
+    @for(acc <- accounts){
+        @for(a <- acc) {
+            <li class="list-group-item list-group-item-@style">
+                <span class="glyphicon glyphicon-user"></span>
+                @a.account
+                <div class="pull-right">
+                    <span class="glyphicon glyphicon-time"></span>
+                    updated @a.updateDate.toString("yyyy/MM/dd HH:mm:ss")
+                </div>
+            </li>
+        }
+    }
+}
+
 @main("event") {
 
+    @*** if form has error ***@
+    @if(!flash.isEmpty){
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>@flash.get("errorMessages")</strong>
+        </div>
+    }
+
+
     <div class="page-header">
-        <h1>@event.eventName  <small>@event.eventDate</small></h1>
+        <h1>
+            @event.eventName  <small>@event.eventDate</small>
+            <!-- Button trigger modal -->
+            <button class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#myModal">
+                Regist Ticket Information
+            </button>
+        </h1>
     </div>
 
 
-    参加メンバー一覧<br/>
-    @for(account <- accountList){
-        @account
-    }
+    <h4><span class="glyphicon glyphicon-ok-sign"></span> 参加メンバー一覧 <span class="badge">@accountList.get(1).map(_.size).getOrElse(0)</span></h4>
+    <ul class="list-group">
+        @{
+            val acc = accountList.get(1)
+            if(acc.size == 0){
+                "*** no member ***"
+            }
+            else{display(accountList.get(1), "success")}
+        }
+    </ul>
+
+
+    <h4><span class="glyphicon glyphicon-remove-sign"></span> 不参加メンバー一覧 <span class="badge">@accountList.get(2).map(_.size).getOrElse(0)</span></h4>
+    <ul class="list-group">
+        @{
+            val acc = accountList.get(2)
+            if(acc.size == 0){
+                "*** no member ***"
+            }
+            else{display(accountList.get(2), "danger")}
+        }
+    </ul>
+
+    <h4><span class="glyphicon glyphicon-question-sign"></span> 未定メンバー一覧 <span class="badge">@accountList.get(3).map(_.size).getOrElse(0)</span></h4>
+    <ul class="list-group">
+        @{
+            val acc = accountList.get(3)
+            if(acc.size == 0){
+                "*** no member ***"
+            }
+            else{display(accountList.get(3), "warning")}
+        }
+    </ul>
 
     <form method="post" action="@routes.EventController.viewEvent(event.eventId)">
         <p>
@@ -19,4 +81,50 @@
         </p>
     </form>
 
+    <hr>
+    @*** create ticket info ***@
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                </div>
+
+                <form class="form-horizontal" role="form" method="GET" action="@routes.TicketController.createTicket(event.eventId)">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="number" class="col-sm-2 control-label">Number</label>
+                            <div class="col-sm-10">
+                                <input type="number" id="number" name="number" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ticketHolder" class="col-sm-2 control-label">Ticket Holder</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="ticketHolder" name="ticketHolder" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Registry</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @for(ticket <- ticketInfo){
+        Ticket Holder: @ticket.ticketHolder <br/>
+        Ticket Number: @ticket.number<br/>
+    }
+
+@***
+    <div class="text-center">
+        <a href="/event/list" class="btn btn-default" role="button">list</a>
+    </div>
+***@
 }

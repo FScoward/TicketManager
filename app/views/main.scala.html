@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit request: RequestHeader)
 
 <!DOCTYPE html>
 
@@ -8,11 +8,46 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.js"))'></script>
         <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))'>
     </head>
     <body>
+
         <div class="container">
+
+        @*** header ***@
+            <nav class="navbar navbar-inverse" role="navigation">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">Ticket Manager</a>
+                    <p class="navbar-text">Enjoy Your Event</p>
+                    <ul class="nav navbar-nav navbar-right">
+                    @{
+                        request.session.get("screenName") match {
+                            case Some(x) => {
+                                val url = "" + routes.UserController.index(x)
+                                <li><a href="/event/create">Create Event</a></li>
+                                <li><a href="/event/list">Event List</a></li>
+
+                                <li><a href={url}>{x}</a></li>
+                                <li><a href="/logout">Logout</a></li>
+                            }
+                            case None => <li><a href="/login">Login</a></li>
+                        }
+                    }
+                    </ul>
+                </div>
+            </nav>
+
+        @*** body ***@
+
             @content
+
+        @*** footer ***@
+            <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+                    <a class="navbar-brand pull-right" href="#">
+                    @@Presented by FScoward
+                    </a>
+            </nav>
         </div>
     </body>
 </html>

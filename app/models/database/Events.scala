@@ -8,7 +8,7 @@ import java.sql.Date
 /**
  * Created by FScoward on 2014/04/26.
  */
-case class Event(eventId: String, eventName: String, eventDate: Date, isPrivate: Boolean)
+case class Event(eventId: String, eventName: String, eventLocation: String, eventDate: Date, isPrivate: Boolean)
 
 object Events {
   val database = Database.forDataSource(DB.getDataSource())
@@ -16,9 +16,10 @@ object Events {
   class Events(tag: Tag) extends Table[Event](tag, "EVENT") {
     def eventId = column[String]("EVENT_ID", O NotNull)
     def eventName = column[String]("EVENT_NAME", O NotNull)
+    def eventLocation = column[String]("EVENT_LOCATION", O NotNull)
     def eventDate = column[Date]("EVENT_DATE", O NotNull)
     def isPrivate = column[Boolean]("IS_PRIVATE", O NotNull)
-    def * = (eventId, eventName, eventDate, isPrivate) <> (Event.tupled, Event.unapply)
+    def * = (eventId, eventName, eventLocation, eventDate, isPrivate) <> (Event.tupled, Event.unapply)
   }
  
   val events = TableQuery[Events]
@@ -28,19 +29,19 @@ object Events {
   }
   
   def read = database.withSession { implicit session: Session =>
-    events.list
+    events.where(_.isPrivate === false).list
   }
   
   def findEventById(eventId: String) = database.withSession { implicit session: Session =>
     events.where(_.eventId === eventId).list
   }
 
-  def findEventByAccountId(accountId: Int) = database.withSession { implicit session: Session =>
+  def findEventByScreenName(screenName: String) = database.withSession { implicit session: Session =>
     val query = for{
-      e <- events
-      m <- Accounts.accounts filter(_.accountId === accountId)
-      em <- EventMembers.eventMembers
-    } yield (e.eventName)
+      m <- Accounts.accounts if (m.account === screenName)
+      em <- EventMembers.eventMembers if (em.account === screenName)
+      e <- events if (e.eventId === em.eventId) && (em.account === screenName)
+    } yield (e)
 
     query.list()
   }
