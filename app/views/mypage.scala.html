@@ -1,4 +1,4 @@
-@(screenName: Option[String], eventList: List[models.database.Event])(implicit rquest: RequestHeader, flash: Flash)
+@(screenName: Option[String], eventList: List[models.database.Event], paginationCount: Int, now: Int)(implicit rquest: RequestHeader, flash: Flash)
 @main("Personal Page") {
 
     <div class="page-header">
@@ -8,10 +8,16 @@
     @template.eventList(eventList)
 
     <ul class="pagination">
-        <li class="disabled"><a href="#">&laquo;</a></li>
-        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-        ...
+        <li><a href="@routes.UserController.index(screenName.get, 1)">&laquo;</a></li>
+        @{
+            (1 to paginationCount).map{ page =>
+                if(page == now){
+                    <li class="active"><a href={routes.UserController.index(screenName.get, page).toString}>{page} <span class="sr-only">(current)</span></a></li>
+                }else{
+                    <li><a href={routes.UserController.index(screenName.get, page).toString}>{page} <span class="sr-only">(current)</span></a></li>
+                }
+            }
+        }
+        <li><a href="@routes.UserController.index(screenName.get, paginationCount)">&raquo;</a></li>
     </ul>
-
-
 }

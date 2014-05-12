@@ -71,13 +71,13 @@
                         request.session.get("screenName") match {
                             case Some(x) => {
                                 val url = "" + routes.UserController.index(x)
+
                                 <li>
                                     <a href="#" data-toggle="modal" data-target="#eventModal">
                                         Create Event
                                     </a>
                                 </li>
 
-                                //<li><a href="/event/list?page=0">Event List</a></li>
                                 <li><a href={routes.EventController.viewEventList(0).toString}>Event List</a></li>
 
                                 <li><a href={url}>{x}</a></li>
@@ -107,11 +107,13 @@
             @content
 
         @*** footer ***@
+@***
             <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
                     <a class="navbar-brand pull-right" href="#">
                     @@Presented by FScoward
                     </a>
             </nav>
+***@
         </div>
     </body>
 </html>

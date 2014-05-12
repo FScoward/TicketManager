@@ -17,13 +17,17 @@ object UserController extends Controller with AuthAction {
     * */
 //    models.database.Events.findEventByAccountId(1)
 
-
     // get owner event list
+    val (eventList, count) = Events.findEventByScreenName(username, page - 1)
 
-    val eventList = Events.findEventByScreenName(username, page - 1)
+    // pagination をいくつ表示するか
+    val paginationCount = {
+      (count / 10) + {
+        if((count % 10) > 0) 1
+        else 0
+      }
+    }
 
-
-
-    Ok(views.html.mypage(Option(username), eventList))
+    Ok(views.html.mypage(Option(username), eventList, paginationCount, page))
   }
 }

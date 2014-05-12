@@ -15,7 +15,7 @@ GET     /callback                   controllers.LoginController.callback
 GET     /login                      controllers.LoginController.login
 GET     /logout                     controllers.LoginController.logout
 
-GET     /:username             controllers.UserController.index(username: String, page: Int ?= 1)
+GET     /:username                  controllers.UserController.index(username: String, page: Int ?= 1)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

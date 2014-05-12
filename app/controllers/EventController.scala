@@ -57,8 +57,16 @@ object EventController extends Controller with AuthAction{
    * event list page
    * */
   def viewEventList(page: Int) = Action { implicit request =>
-    val eventList = models.database.Events.read(page - 1)
-    Ok(views.html.events(eventList))
+    val (eventList, count) = models.database.Events.read(page - 1)
+
+    val paginationCount = {
+      (count / 10) + {
+        if((count % 10) > 0) 1
+        else 0
+      }
+    }
+
+    Ok(views.html.events(eventList, paginationCount, page))
   }
 
   /**

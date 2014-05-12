@@ -1,4 +1,4 @@
-@(eventList: List[models.database.Event])(implicit rquest: RequestHeader, flash: Flash)
+@(eventList: List[models.database.Event], paginationCount: Int, now: Int)(implicit rquest: RequestHeader, flash: Flash)
 @main("event list") {
 
     <div class="page-header">
@@ -13,9 +13,18 @@
 
 
     <ul class="pagination">
-        <li class="disabled"><a href="#">&laquo;</a></li>
-        <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-        ...
+        <li><a href="@routes.EventController.viewEventList(1)">&laquo;</a></li>
+        @{
+            (1 to paginationCount).map{ page =>
+                if(page == now){
+                    <li class="active"><a href={routes.EventController.viewEventList(page).toString}>{page} <span class="sr-only">(current)</span></a></li>
+                }else{
+                    <li><a href={routes.EventController.viewEventList(page).toString}>{page} <span class="sr-only">(current)</span></a></li>
+                }
+
+            }
+        }
+        <li><a href="@routes.EventController.viewEventList(paginationCount)">&raquo;</a></li>
     </ul>
 
 }

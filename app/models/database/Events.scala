@@ -29,7 +29,8 @@ object Events {
   }
   
   def read(page: Int) = database.withSession { implicit session: Session =>
-    events.where(_.isPrivate === false).drop(page * 10).take(10).list
+    val query = events.where(_.isPrivate === false)
+    (query.drop(page * 10).take(10).list, query.length.run)
   }
   
   def findEventById(eventId: String) = database.withSession { implicit session: Session =>
@@ -43,6 +44,7 @@ object Events {
       e <- events if (e.eventId === em.eventId) && (em.account === screenName)
     } yield (e)
 
-    query.drop(page * 10).take(10).list()
+    (query.drop(page * 10).take(10).list(), query.length.run)
   }
+
 }
