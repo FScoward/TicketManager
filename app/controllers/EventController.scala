@@ -14,6 +14,7 @@ import play.api.mvc.Security.Authenticated
 import models.database.Event
 import models.database.EventMember
 import play.api.i18n.Messages
+import org.h2.jdbc.JdbcSQLException
 
 object EventController extends Controller with AuthAction{
   
@@ -44,11 +45,20 @@ object EventController extends Controller with AuthAction{
       },
       success => {
         val (eventName, eventLocation, eventDate, isPrivate) = success
-        val eventId = Crypto.sign(eventName + eventLocation + eventDate)
+        val screenName = request.session.get("screenName").get
+        val eventId = Crypto.sign(eventName + eventLocation + eventDate + screenName)
         val event = Event(eventId, eventName, eventLocation, new java.sql.Date(eventDate.getTime), isPrivate)
-        EventMembers.insert(event, request.session.get("screenName").get)
 
-        Redirect(routes.EventController.viewEvent(eventId))
+        try{
+          EventMembers.insert(event, screenName)
+          Redirect(routes.EventController.viewEvent(eventId))
+        }catch{
+          case e: JdbcSQLException => {
+            play.Logger.debug("JdbcSQLException: " + e.getMessage)
+            Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> e.getMessage)
+          }
+        }
+//        Redirect(routes.EventController.viewEvent(eventId))
       }
     )
   }
