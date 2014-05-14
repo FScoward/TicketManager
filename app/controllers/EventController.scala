@@ -54,11 +54,10 @@ object EventController extends Controller with AuthAction{
           Redirect(routes.EventController.viewEvent(eventId))
         }catch{
           case e: JdbcSQLException => {
-            play.Logger.debug("JdbcSQLException: " + e.getMessage)
-            Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> e.getMessage)
+            // TODO
+            Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> "既に登録されていませんか？")
           }
         }
-//        Redirect(routes.EventController.viewEvent(eventId))
       }
     )
   }

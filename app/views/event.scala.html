@@ -18,6 +18,12 @@
 }
 
 @main("event") {
+    <script type="text/javascript">
+    $(".glyphicon-edit").click(function(ev){
+        alert('icon clicked');
+    });
+    </script>
+
 
     <div class="page-header">
         <h1>
@@ -132,15 +138,25 @@
         </div>
     </div>
 
+    <hr>
+    <h3>Ticket Holder</h3>
     <div class="row">
     @for(ticket <- ticketInfo){
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Ticket Holder: @ticket.ticketHolder </h3>
+                    <h3 class="panel-title">@ticket.ticketHolder
+
+                        <button type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-star"></span> Star
+                        </button>
+
+                        <span class="glyphicon glyphicon-edit pull-right"></span>&nbsp;
+                        <span class="glyphicon glyphicon-remove pull-right"></span>
+                    </h3>
                 </div>
                 <div class="panel-body">
-                    Ticket Number: @ticket.number
+                    @ticket.number
                 </div>
             </div>
         </div>

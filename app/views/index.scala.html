@@ -6,18 +6,15 @@
 
         @screenName match {
             case Some(s) => {
-                @s
-                <br/>
-                <a href="/logout">logout</a>
             }
             case None => {
                 <a href="/login">
                     <img src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" alt="Login">
                 </a>
+                Or
             }
         }
-
-        Or <a class="btn btn-default" href=@routes.EventController.viewEventList(1)>View Open Event Group</a>
+        <a class="btn btn-default" href=@routes.EventController.viewEventList(1)>View Open Event Group</a>
 
     </div>
 }
