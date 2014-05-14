@@ -47,7 +47,7 @@ object EventController extends Controller with AuthAction{
         val (eventName, eventLocation, eventDate, isPrivate) = success
         val screenName = request.session.get("screenName").get
         val eventId = Crypto.sign(eventName + eventLocation + eventDate + screenName)
-        val event = Event(eventId, eventName, eventLocation, new java.sql.Date(eventDate.getTime), isPrivate)
+        val event = Event(eventId, eventName, eventLocation, new java.sql.Date(eventDate.getTime), screenName, isPrivate)
 
         try{
           EventMembers.insert(event, screenName)
@@ -94,7 +94,7 @@ object EventController extends Controller with AuthAction{
 
       Ok(views.html.event(event.head, groupedAccountList, ticketInfo))
     }else{
-      BadRequest
+      BadRequest("存在しないページです。")
     }
   }
 
@@ -109,6 +109,13 @@ object EventController extends Controller with AuthAction{
     EventMembers.updateStatus(eventId, uuid, status)
 
     Redirect(routes.EventController.viewEvent(eventId))
+  }
+
+  def deleteEvent = AuthAction { uuid => implicit request =>
+    val eventId = request.body.asFormUrlEncoded.get("eventId").head
+    Events.deleteEvent(uuid, eventId)
+
+    Redirect(routes.UserController.index(uuid))
   }
 
 }

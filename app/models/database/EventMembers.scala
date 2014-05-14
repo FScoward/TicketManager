@@ -8,6 +8,7 @@ import scala.slick.driver.H2Driver.simple._
 import play.api.Play.current
 import org.joda.time.LocalDateTime
 import com.github.tototoshi.slick.H2JodaSupport._
+import scala.slick.model.ForeignKeyAction
 
 sealed abstract class AttendStatus
 case object Attendance extends AttendStatus
@@ -27,7 +28,7 @@ object EventMembers {
     def attendStatus = column[Int]("ATTEND_STATUS")
     def updateDate = column[LocalDateTime]("UPDATE_DATE")
 
-    def eventFK = foreignKey("event_fk", eventId, Events.events)(_.eventId)
+    def eventFK = foreignKey("event_fk", eventId, Events.events)(_.eventId, onDelete = ForeignKeyAction.Cascade)
     def accountFK = foreignKey("account_fk", account, Accounts.accounts)(_.account)
     def * = (eventId, account, authority, attendStatus, updateDate) <> (EventMember.tupled, EventMember.unapply)
   }

@@ -41,7 +41,7 @@
                                 <div class="form-group">
                                     <label for="date" class="col-sm-2 control-label">Date</label>
                                     <div class="col-sm-10">
-                                        <input type="date" id="date" name="eventDate" placeholder="YYYY/MM/DD" required>
+                                        <input type="date" id="date" name="eventDate" placeholder="YYYY-MM-DD" required>
                                     </div>
                                 </div>
 
@@ -64,7 +64,7 @@
         @*** header ***@
             <nav class="navbar navbar-inverse" role="navigation">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Ticket Manager</a>
+                    <a class="navbar-brand" href="/">Ticket Manager</a>
                     <p class="navbar-text">Enjoy Your Event</p>
                     <ul class="nav navbar-nav navbar-right">
                     @{
@@ -78,12 +78,15 @@
                                     </a>
                                 </li>
 
-                                <li><a href={routes.EventController.viewEventList(0).toString}>Event List</a></li>
+                                <li><a href={routes.EventController.viewEventList(1).toString}>Event List</a></li>
 
                                 <li><a href={url}>{x}</a></li>
                                 <li><a href="/logout">Logout</a></li>
                             }
-                            case None => <li><a href="/login">Login</a></li>
+                            case None => {
+                                <li><a href={routes.EventController.viewEventList(1).toString}>Event List</a></li>
+                                <li><a href="/login">Login</a></li>
+                            }
                         }
                     }
                     </ul>
@@ -97,6 +100,14 @@
         <div class="alert alert-danger alert-dismissable">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <strong>@flash.get("errorMessages")</strong>
+        </div>
+    }
+
+    @*** when no login ***@
+    @if(request.session.get("screenName").isEmpty && request.path != "/"){
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Read Only if you don't login</strong>
         </div>
     }
 

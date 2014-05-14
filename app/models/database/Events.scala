@@ -8,7 +8,7 @@ import java.sql.Date
 /**
  * Created by FScoward on 2014/04/26.
  */
-case class Event(eventId: String, eventName: String, eventLocation: String, eventDate: Date, isPrivate: Boolean)
+case class Event(eventId: String, eventName: String, eventLocation: String, eventDate: Date, owner: String, isPrivate: Boolean)
 
 object Events {
   val database = Database.forDataSource(DB.getDataSource())
@@ -18,8 +18,11 @@ object Events {
     def eventName = column[String]("EVENT_NAME", O NotNull)
     def eventLocation = column[String]("EVENT_LOCATION", O NotNull)
     def eventDate = column[Date]("EVENT_DATE", O NotNull)
+    def owner = column[String]("OWNER", O NotNull)
     def isPrivate = column[Boolean]("IS_PRIVATE", O NotNull)
-    def * = (eventId, eventName, eventLocation, eventDate, isPrivate) <> (Event.tupled, Event.unapply)
+    def ownerFK = foreignKey("owner_fk", owner, Accounts.accounts)(_.account)
+
+    def * = (eventId, eventName, eventLocation, eventDate, owner, isPrivate) <> (Event.tupled, Event.unapply)
   }
  
   val events = TableQuery[Events]
@@ -45,6 +48,10 @@ object Events {
     } yield (e)
 
     (query.drop(page * 10).take(10).list(), query.length.run)
+  }
+
+  def deleteEvent(screenName: String, eventId: String) = database.withSession { implicit session: Session =>
+    events.where(_.eventId === eventId).where(_.owner === screenName).delete
   }
 
 }
