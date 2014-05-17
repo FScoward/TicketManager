@@ -27,8 +27,9 @@ object Events {
  
   val events = TableQuery[Events]
   
-  def insert(event: Event) = database.withSession { implicit session: Session =>
+  def insert(event: Event) = database.withTransaction { implicit session: Session =>
     events.insert(event)
+    EventAdmins.eventAdmins.insert(EventAdmin(event.eventId, event.owner))
   }
   
   def read(page: Int) = database.withSession { implicit session: Session =>

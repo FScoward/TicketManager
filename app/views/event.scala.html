@@ -1,6 +1,7 @@
 @(event: models.database.Event,
     accountList: Map[Int, List[models.database.EventMember]],
-    ticketInfo: List[models.database.Ticket])(implicit request: RequestHeader, flash: Flash)
+    ticketInfo: List[models.database.Ticket],
+    eventAdmins: List[String])(implicit request: RequestHeader, flash: Flash)
 
 @display(accounts: Option[List[models.database.EventMember]], style: String) = {
     @for(acc <- accounts){
@@ -8,6 +9,9 @@
             <li class="list-group-item list-group-item-@style">
                 <span class="glyphicon glyphicon-user"></span>
                 @a.account
+                @if(eventAdmins.contains(a.account)){
+                    <span class="glyphicon glyphicon-flag"></span>
+                }
                 <div class="pull-right">
                     <span class="glyphicon glyphicon-time"></span>
                     updated @a.updateDate.toString("yyyy/MM/dd HH:mm:ss")
@@ -19,8 +23,13 @@
 
 @main("event") {
     <script type="text/javascript">
-    $(".glyphicon-edit").click(function(ev){
-        alert('icon clicked');
+    $(function(){
+        $("#deleteTicketForm").submit(function(event){
+            return confirm("Really?");
+        });
+        $("#deleteEventForm").submit(function(event){
+            return confirm("Really?");
+        });
     });
     </script>
 
@@ -29,9 +38,18 @@
         <h1>
             @event.eventName  <small>@event.eventLocation / @event.eventDate</small>
             <!-- Button trigger modal -->
-            <button class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#myModal">
-                Regist Ticket Information
-            </button>
+                @{
+                    request.session.get("screenName") match {
+                        case Some(x) => {
+                            if(eventAdmins.contains(x)){
+                            <button class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#myModal">
+                                Regist Ticket Information
+                            </button>
+                            }
+                        }
+                        case None =>
+                    }
+                }
         </h1>
     </div>
     <br/>
@@ -40,7 +58,7 @@
         request.session.get("screenName") match {
             case Some(x) => {
                 if(x == event.owner) {
-                    <form method="post" action={routes.EventController.deleteEvent().toString}>
+                    <form id="deleteEventForm" method="post" action={routes.EventController.deleteEvent().toString}>
                         <input type="hidden" id="eventId" name="eventId" value={event.eventId} />
                         <button type="submit" class="btn btn-danger pull-right">DELETE THIS EVENT</button>
                     </form>
@@ -138,22 +156,22 @@
         </div>
     </div>
 
-    <hr>
     <h3>Ticket Holder</h3>
     <div class="row">
     @for(ticket <- ticketInfo){
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">@ticket.ticketHolder
+                    <form id="deleteTicketForm" method="post" action="@routes.TicketController.deleteTicket(ticket.ticketId.get)">
+                        <h3 class="panel-title">@ticket.ticketHolder
+                            @if(eventAdmins.contains(request.session.get("screenName").get)){
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                            }
 
-                        <button type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-star"></span> Star
-                        </button>
-
-                        <span class="glyphicon glyphicon-edit pull-right"></span>&nbsp;
-                        <span class="glyphicon glyphicon-remove pull-right"></span>
-                    </h3>
+                        </h3>
+                    </form>
                 </div>
                 <div class="panel-body">
                     @ticket.number

@@ -21,7 +21,7 @@ object Accounts {
   }
   val accounts = TableQuery[Accounts]
 
-  def insert(account: Account) = database.withSession { implicit session: Session =>
+  def insert(account: Account) = database.withTransaction { implicit session: Session =>
     accounts.insert(account)
   }
 

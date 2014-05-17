@@ -38,6 +38,7 @@ object EventMembers {
   def insert(event: Event, account: String) = database.withTransaction { implicit session: Session =>
     Events.events.insert(event)
     eventMembers.insert(EventMember(event.eventId, account, "Normal"))
+    EventAdmins.eventAdmins.insert(EventAdmin(event.eventId, account))
   }
 
   def findAccountByEventId(eventId: String) = database.withSession { implicit session: Session =>

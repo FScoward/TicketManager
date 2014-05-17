@@ -11,6 +11,8 @@ POST    /event/delete               controllers.EventController.deleteEvent
 POST    /event/:eventId             controllers.EventController.attend(eventId: String)
 GET     /event/:eventId/ticket      controllers.TicketController.createTicket(eventId: String)
 
+POST    /ticket/delete              controllers.TicketController.deleteTicket(ticketId: Int)
+
 GET     /callback                   controllers.LoginController.callback
 GET     /login                      controllers.LoginController.login
 GET     /logout                     controllers.LoginController.logout

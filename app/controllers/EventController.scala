@@ -91,7 +91,10 @@ object EventController extends Controller with AuthAction{
       // get ticket info
       val ticketInfo = Tickets.findTicketByEventId(eventId)
 
-      Ok(views.html.event(event.head, groupedAccountList, ticketInfo))
+      // get admin user
+      val adminAccounts = EventAdmins.findByEventId(eventId)
+
+      Ok(views.html.event(event.head, groupedAccountList, ticketInfo, adminAccounts))
     }else{
       BadRequest("存在しないページです。")
     }

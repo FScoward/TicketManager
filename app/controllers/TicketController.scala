@@ -50,4 +50,11 @@ object TicketController extends Controller with AuthAction {
       }
     )
   }
+
+  def deleteTicket(ticketId: Int) = AuthAction{ uuid => implicit request =>
+    Tickets.deleteTicketByTicketId(ticketId)
+
+    Redirect(request.headers.get("Referer").get)
+  }
+
 }

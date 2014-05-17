@@ -3,6 +3,8 @@ package models.database
 import play.api.db.DB
 import scala.slick.driver.H2Driver.simple._
 import play.api.Play.current
+import scala.slick.model.ForeignKeyAction
+
 /**
  * Created by FScoward on 2014/05/10.
  */
@@ -16,7 +18,7 @@ object Tickets {
     def number = column[Int]("NUMBER", O NotNull)
     def ticketHolder = column[String]("TICKET_HOLDER", O NotNull)
     def status = column[Int]("STATUS", O NotNull)
-    def eventFK = foreignKey("event_fk", eventId, Events.events)(_.eventId)
+    def eventFK = foreignKey("event_fk", eventId, Events.events)(_.eventId, onDelete = ForeignKeyAction.Cascade)
     def accountFK = foreignKey("account_fk", ticketHolder, Accounts.accounts)(_.account)
     def * = (eventId, number, ticketHolder, status, ticketId) <> (Ticket.tupled, Ticket.unapply)
   }
@@ -29,5 +31,9 @@ object Tickets {
 
   def findTicketByEventId(eventId: String) = database.withSession { implicit session: Session =>
     tickets.where(_.eventId === eventId).list
+  }
+
+  def deleteTicketByTicketId(ticketId: Int) = database.withSession { implicit session: Session =>
+    tickets.where(_.ticketId === ticketId).delete
   }
 }
