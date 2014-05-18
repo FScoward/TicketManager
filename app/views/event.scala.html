@@ -1,7 +1,9 @@
 @(event: models.database.Event,
     accountList: Map[Int, List[models.database.EventMember]],
     ticketInfo: List[models.database.Ticket],
-    eventAdmins: List[String])(implicit request: RequestHeader, flash: Flash)
+    eventAdmins: List[String],
+    commentList: List[models.database.Comment]
+)(implicit request: RequestHeader, flash: Flash)
 
 @display(accounts: Option[List[models.database.EventMember]], style: String) = {
     @for(acc <- accounts){
@@ -36,12 +38,13 @@
 
     <div class="page-header">
         <h1>
-            @event.eventName  <small>@event.eventLocation / @event.eventDate</small>
+            @event.eventName  <small>@event.eventLocation / @event.eventDate / @@@event.owner</small>
             <!-- Button trigger modal -->
                 @{
                     request.session.get("screenName") match {
                         case Some(x) => {
-                            if(eventAdmins.contains(x)){
+                            if(event.owner == x){
+                            <!--<button class="btn btn-warning" data-toggle="modal" data-target="#adminModal">Add Admin</button>-->
                             <button class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#myModal">
                                 Regist Ticket Information
                             </button>
@@ -53,6 +56,12 @@
         </h1>
     </div>
     <br/>
+    余剰チケット @{
+            val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
+            val rest =  accountList.get(1).size
+            ticketNum - rest
+    }
+    <button class="btn btn-default">余剰チケット情報を公開する</button>
 
     @{
         request.session.get("screenName") match {
@@ -103,25 +112,33 @@
         }
     </ul>
 
-    <form method="post" action="@routes.EventController.viewEvent(event.eventId)">
-        <div class="row">
-            <p>
-                <div class="col-md-4">
-                    <button type="submit" name="status" class="btn btn-success btn-lg btn-block" value="attend">参加</button>
+    @{
+        request.session.get("screenName") match {
+            case Some(x) => {
+            <form method="post" action={routes.EventController.viewEvent(event.eventId).toString}>
+                <div class="row">
+                    <p>
+                        <div class="col-md-4">
+                            <button type="submit" name="status" class="btn btn-success btn-lg btn-block" value="attend">参加</button>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" name="status" class="btn btn-danger btn-lg btn-block" value="absence">不参加</button>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" name="status" class="btn btn-warning btn-lg btn-block" value="undecided">未定</button>
+                        </div>
+                    </p>
                 </div>
-                <div class="col-md-4">
-                    <button type="submit" name="status" class="btn btn-danger btn-lg btn-block" value="absence">不参加</button>
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" name="status" class="btn btn-warning btn-lg btn-block" value="undecided">未定</button>
-                </div>
-            </p>
-        </div>
-    </form>
+            </form>
+            }
+            case None =>
+        }
+
+    }
 
     <hr>
+
     @*** create ticket info ***@
-    <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -149,24 +166,62 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Registry</button>
-                        <!--<button type="button" class="btn btn-primary">Save changes</button>-->
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <h3>Ticket Holder</h3>
+
+    @*** add Administrator ***@
+    <div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="adminModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="adminModalLabel">Add Administrator</h4>
+                </div>
+
+                <form class="form-horizontal" role="form" method="post" action="@routes.EventController.addAdministrator()">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="account" class="col-sm-4 control-label">Account</label>
+                            <div class="col-sm-8">
+                                <!--<input type="text" id="account" name="account" required />-->
+                                <select id="account" name="account" required>
+                                    @for(accountIte <- accountList.values){
+                                        @for(account <- accountIte){
+                                            @if(!eventAdmins.contains(account.account)){
+                                                <option value=@account.account>@account.account</option>
+                                            }
+                                        }
+                                    }
+                                    <input type="hidden" name="eventId" value=@event.eventId />
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Registry</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
     @for(ticket <- ticketInfo){
+        <h3>Ticket情報</h3>
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <form id="deleteTicketForm" method="post" action="@routes.TicketController.deleteTicket(ticket.ticketId.get)">
                         <h3 class="panel-title">@ticket.ticketHolder
-                            @if(eventAdmins.contains(request.session.get("screenName").get)){
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <span class="glyphicon glyphicon-remove"></span>
+                            @if(eventAdmins.contains(request.session.get("screenName").getOrElse(""))){
+                            <button type="submit" class="btn btn-danger btn-sm pull-right">
+                                <span class="glyphicon glyphicon-remove"></span>削除
                             </button>
                             }
 
@@ -174,10 +229,38 @@
                     </form>
                 </div>
                 <div class="panel-body">
-                    @ticket.number
+                    @ticket.number - @ticket.status
                 </div>
             </div>
         </div>
     }
     </div>
+
+    @{
+        request.session.get("screenName") match {
+            case Some(x) => {
+            <h3>コメントを残す</h3>
+            <form method="post" action={routes.EventController.comment().toString}>
+                <textarea cols="100" name="comment" wrap="hard" required="required"></textarea>
+                <input type="hidden" name="eventId" value={event.eventId}/>
+                <button type="submit" class="btn btn-default">送信</button>
+            </form>
+            }
+            case None =>
+        }
+    }
+    @for(comment <- commentList){
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        @comment.account
+                        <div class="pull-right">
+                            @comment.createDate.toString("yyyy/MM/dd HH:mm:ss")
+                        </div>
+                </div>
+                <div class="panel-body">
+                    @Html(comment.comment.replace("\n", "<br/>"))
+                </div>
+            </div>
+    }
 }

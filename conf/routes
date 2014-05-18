@@ -7,7 +7,9 @@ GET     /                           controllers.Application.index
 GET     /event/create               controllers.EventController.create
 GET     /event/list                 controllers.EventController.viewEventList(page: Int ?= 1)
 GET     /event/:eventId             controllers.EventController.viewEvent(eventId: String)
+POST    /event/comment              controllers.EventController.comment
 POST    /event/delete               controllers.EventController.deleteEvent
+POST    /event/addAdmin             controllers.EventController.addAdministrator
 POST    /event/:eventId             controllers.EventController.attend(eventId: String)
 GET     /event/:eventId/ticket      controllers.TicketController.createTicket(eventId: String)
 

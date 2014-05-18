@@ -108,7 +108,7 @@
     @if(request.session.get("screenName").isEmpty && request.path != "/"){
         <div class="alert alert-danger alert-dismissable">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            <strong>Read Only if you don't login</strong>
+            <strong>Read Only Mode. Please login</strong>
             <a href="/login">
                     <img src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" alt="Login">
             </a>

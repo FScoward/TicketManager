@@ -16,9 +16,9 @@ object LoginController extends Controller {
   def login = Action { implicit request =>
     try{
       val twitter = TwitterFactory.getSingleton
+      twitter.setOAuthAccessToken(null)
       val requestToken = twitter.getOAuthRequestToken
       val url = requestToken.getAuthorizationURL
-      twitter.setOAuthAccessToken(null)
       Redirect(url)
     }catch {
       case e: TwitterException => Unauthorized(e.getMessage)

@@ -34,7 +34,6 @@ object TicketController extends Controller with AuthAction {
         val ticket = Ticket(eventId, number, ticketHolder)
 
         if(Accounts.findAccountByAccount(ticketHolder).size == 0){
-          // TODO
           Redirect(routes.EventController.viewEvent(eventId)).flashing("errorMessages" -> "please input registerd user")
         }else{
           try{
@@ -42,7 +41,6 @@ object TicketController extends Controller with AuthAction {
             Redirect(routes.EventController.viewEvent(eventId))
           }catch{
             case e: JdbcSQLException => {
-              // TODO
               Redirect(routes.EventController.viewEvent(eventId)).flashing("errorMessages" -> "既に登録されていませんか？")
             }
           }

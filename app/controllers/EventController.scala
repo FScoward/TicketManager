@@ -54,7 +54,6 @@ object EventController extends Controller with AuthAction{
           Redirect(routes.EventController.viewEvent(eventId))
         }catch{
           case e: JdbcSQLException => {
-            // TODO
             Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> "既に登録されていませんか？")
           }
         }
@@ -94,7 +93,11 @@ object EventController extends Controller with AuthAction{
       // get admin user
       val adminAccounts = EventAdmins.findByEventId(eventId)
 
-      Ok(views.html.event(event.head, groupedAccountList, ticketInfo, adminAccounts))
+      // TODO
+      // get comment
+      val commentList = Comments.findByEventId(eventId)
+
+      Ok(views.html.event(event.head, groupedAccountList, ticketInfo, adminAccounts, commentList))
     }else{
       BadRequest("存在しないページです。")
     }
@@ -118,6 +121,25 @@ object EventController extends Controller with AuthAction{
     Events.deleteEvent(uuid, eventId)
 
     Redirect(routes.UserController.index(uuid))
+  }
+
+  def addAdministrator = AuthAction { uuid => implicit request =>
+    val post = request.body.asFormUrlEncoded.get
+    val account = post.get("account").get.head
+    val eventId = post.get("eventId").get.head
+
+    EventAdmins.insert(EventAdmin(eventId, account))
+
+    Redirect(routes.EventController.viewEvent(eventId))
+  }
+
+  def comment = AuthAction { uuid => implicit request =>
+    val post = request.body.asFormUrlEncoded
+    val eventId = post.get("eventId").head
+    val comment = post.get("comment").head
+
+    Comments.insert(Comment(eventId = eventId, comment = comment, account = uuid))
+    Redirect(routes.EventController.viewEvent(eventId))
   }
 
 }
