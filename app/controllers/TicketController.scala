@@ -55,4 +55,18 @@ object TicketController extends Controller with AuthAction {
     Redirect(request.headers.get("Referer").get)
   }
 
+  def updateTicketStatus = AuthAction { uuid => implicit request =>
+    // TODO
+    val post = request.body.asFormUrlEncoded
+    val eventId = post.get("eventId").head
+    val ticketId = post.get("ticketId").head.toInt
+    val status = post.get("status").head.toInt
+
+    Tickets.updateStatusByTicketId(ticketId, status)
+
+    play.Logger.debug("eventId: " + eventId + " status: " + status)
+
+    Redirect(request.headers.get("Referer").get)
+  }
+
 }

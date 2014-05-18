@@ -36,4 +36,8 @@ object Tickets {
   def deleteTicketByTicketId(ticketId: Int) = database.withSession { implicit session: Session =>
     tickets.where(_.ticketId === ticketId).delete
   }
+
+  def updateStatusByTicketId(ticketId: Int, status: Int) = database.withSession { implicit session: Session =>
+    tickets.where(_.ticketId === ticketId).map(_.status).update(status)
+  }
 }
