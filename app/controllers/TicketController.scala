@@ -9,9 +9,10 @@ import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
 import models.filter.AuthAction
-import models.database.{Accounts, Tickets, Ticket}
+import models.database._
 import play.api.i18n.Messages
 import org.h2.jdbc.JdbcSQLException
+import models.database.Ticket
 
 object TicketController extends Controller with AuthAction {
   val ticketForm = Form(
@@ -56,17 +57,41 @@ object TicketController extends Controller with AuthAction {
   }
 
   def updateTicketStatus = AuthAction { uuid => implicit request =>
-    // TODO
     val post = request.body.asFormUrlEncoded
     val eventId = post.get("eventId").head
     val ticketId = post.get("ticketId").head.toInt
     val status = post.get("status").head.toInt
 
     Tickets.updateStatusByTicketId(ticketId, status)
+    Redirect(request.headers.get("Referer").get)
+  }
 
-    play.Logger.debug("eventId: " + eventId + " status: " + status)
+  def openRestTicketInfo = AuthAction{ uuid => implicit request =>
+    val post = request.body.asFormUrlEncoded
+    val eventId = post.get("eventId").head
+
+    OpenTicketInfos.insert(eventId)
 
     Redirect(request.headers.get("Referer").get)
+  }
+
+  def viewOpenTicket = AuthAction{ uuid => implicit request =>
+    val eventList: List[Event] = OpenTicketInfos.findAll
+
+    // TODO
+    val e: List[(Event, Int)] = eventList.map{ event => (event, restTicketNum(event.eventId)) }
+
+//    Ok(views.html.tickets(eventList))
+    Ok(views.html.tickets(e))
+  }
+
+  def restTicketNum(eventId: String): Int = {
+    val ticket = Tickets.findTicketByEventId(eventId)
+    val attend = EventMembers.findByEventIdStatus(eventId)
+    val t: Int = ticket.map{ t => {
+      t.number
+    }}.sum
+    t - attend.length
   }
 
 }

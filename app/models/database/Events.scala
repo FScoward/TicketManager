@@ -54,5 +54,4 @@ object Events {
   def deleteEvent(screenName: String, eventId: String) = database.withSession { implicit session: Session =>
     events.where(_.eventId === eventId).where(_.owner === screenName).delete
   }
-
 }

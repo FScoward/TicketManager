@@ -1,0 +1,15 @@
+@(eventList: List[(models.database.Event, Int)])(implicit rquest: RequestHeader, flash: Flash)
+@main("tickets"){
+
+
+    検索
+
+    <ul class="list-group">
+    @eventList.map{ event =>
+        <li class="list-group-item">
+            @event._1.eventName - @event._1.eventDate - @event._1.eventLocation
+                <a href="https://twitter.com/share?text=@@@event._1.owner 【@event._1.eventName / @event._1.eventDate / @event._1.eventLocation】 のチケット譲っていただけませんか？">@@@event._1.owner</a> / 余り @event._2 枚
+        </li>
+    }
+    </ul>
+}

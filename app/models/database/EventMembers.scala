@@ -70,4 +70,8 @@ object EventMembers {
       eventMembers.insert(EventMember(eventId, account, "Normal", code))
     }
   }
+
+  def findByEventIdStatus(eventId: String) = database.withSession { implicit session: Session =>
+    eventMembers.filter(_.eventId === eventId).filter(_.attendStatus === 1).list
+  }
 }

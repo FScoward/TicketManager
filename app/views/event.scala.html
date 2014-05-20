@@ -59,12 +59,14 @@
     <br/>
     @{
             val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
-            val attendNum =  accountList.get(1).size
+            val attendNum =  accountList.get(1).get.size
             val rest = ticketNum - attendNum
             val text = "余剰チケット: " + rest + "枚 &nbsp;&nbsp;"
             val html = if(rest > 0){
-                <button class="btn btn-default">余剰チケット情報を公開する</button>
-            }
+                <form method="post" action={routes.TicketController.openRestTicketInfo().toString}>
+                    <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を公開する</button>
+                </form>
+            }else{""}
             Html(text + html)
     }
 
