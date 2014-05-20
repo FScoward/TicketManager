@@ -11,11 +11,6 @@ import models.database.{Accounts, Events}
 
 object UserController extends Controller with AuthAction {
   def index(username: String, page: Int) = AuthAction { uuid => implicit request =>
-    /*
-    * TODO
-    * ユーザー名をAccountテーブルから検索
-    * */
-//    models.database.Events.findEventByAccountId(1)
 
     // get owner event list
     val (eventList, count) = Events.findEventByScreenName(username, page - 1)

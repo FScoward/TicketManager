@@ -77,11 +77,8 @@ object TicketController extends Controller with AuthAction {
 
   def viewOpenTicket = AuthAction{ uuid => implicit request =>
     val eventList: List[Event] = OpenTicketInfos.findAll
-
-    // TODO
     val e: List[(Event, Int)] = eventList.map{ event => (event, restTicketNum(event.eventId)) }
 
-//    Ok(views.html.tickets(eventList))
     Ok(views.html.tickets(e))
   }
 

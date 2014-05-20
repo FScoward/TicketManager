@@ -93,7 +93,6 @@ object EventController extends Controller with AuthAction{
       // get admin user
       val adminAccounts = EventAdmins.findByEventId(eventId)
 
-      // TODO
       // get comment
       val commentList = Comments.findByEventId(eventId)
 
