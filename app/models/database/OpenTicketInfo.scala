@@ -40,4 +40,8 @@ object OpenTicketInfos {
     query.list.distinct
   }
 
+  def countByEventId(eventId: String) = database.withSession { implicit session: Session =>
+    openTicketInfos.where(_.eventId === eventId).list.size
+  }
+
 }

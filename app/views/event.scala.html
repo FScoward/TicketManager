@@ -2,7 +2,9 @@
     accountList: Map[Int, List[models.database.EventMember]],
     ticketInfo: List[models.database.Ticket],
     eventAdmins: List[String],
-    commentList: List[models.database.Comment]
+    commentList: List[models.database.Comment],
+    isOpenTicketInfo: Boolean
+
 )(implicit request: RequestHeader, flash: Flash)
 
 @display(accounts: Option[List[models.database.EventMember]], style: String) = {
@@ -61,13 +63,16 @@
             val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
             val attendNum =  accountList.get(1).get.size
             val rest = ticketNum - attendNum
-            val text = "余剰チケット: " + rest + "枚 &nbsp;&nbsp;"
             val html = if(rest > 0){
                 <form method="post" action={routes.TicketController.openRestTicketInfo().toString}>
-                    <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を公開する</button>
+                    {if(isOpenTicketInfo == true){
+                        <button name="eventId" value={event.eventId} class="btn btn-default" disabled="disabled">余剰チケット情報を公開する (余り: {rest} 枚)</button>
+                    }else{
+                        <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を公開する (余り: {rest} 枚)</button>
+                    }}
                 </form>
             }else{""}
-            Html(text + html)
+            Html(html.toString)
     }
 
     @{

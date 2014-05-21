@@ -96,7 +96,9 @@ object EventController extends Controller with AuthAction{
       // get comment
       val commentList = Comments.findByEventId(eventId)
 
-      Ok(views.html.event(event.head, groupedAccountList, ticketInfo, adminAccounts, commentList))
+      val isOpenTicketInfo = if(OpenTicketInfos.countByEventId(eventId) == 1) true else false
+
+      Ok(views.html.event(event.head, groupedAccountList, ticketInfo, adminAccounts, commentList, isOpenTicketInfo))
     }else{
       BadRequest("存在しないページです。")
     }
