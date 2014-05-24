@@ -4,10 +4,12 @@ package models.database
  * Created by endlick1989 on 2014/04/30.
  */
 import play.api.db.DB
-import scala.slick.driver.H2Driver.simple._
+//import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 import play.api.Play.current
 import org.joda.time.LocalDateTime
-import com.github.tototoshi.slick.H2JodaSupport._
+//import com.github.tototoshi.slick.H2JodaSupport._
+import com.github.tototoshi.slick.MySQLJodaSupport._
 import scala.slick.model.ForeignKeyAction
 
 sealed abstract class AttendStatus

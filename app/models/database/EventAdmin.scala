@@ -1,7 +1,8 @@
 package models.database
 
 import play.api.db.DB
-import scala.slick.driver.H2Driver.simple._
+//import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 import play.api.Play.current
 import java.sql.Date
 

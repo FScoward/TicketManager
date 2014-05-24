@@ -6,12 +6,14 @@ package models.database
 import java.sql.Date
 
 import play.api.db.DB
-import scala.slick.driver.H2Driver.simple._
+//import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 import play.api.Play.current
 import scala.slick.ast.ColumnOption.NotNull
 import scala.slick.model.ForeignKeyAction
 import org.joda.time.LocalDateTime
-import com.github.tototoshi.slick.H2JodaSupport._
+//import com.github.tototoshi.slick.H2JodaSupport._
+import com.github.tototoshi.slick.MySQLJodaSupport._
 
 case class Comment(eventId: String, commentId: Int = 0, comment: String, account: String, createDate: LocalDateTime = new LocalDateTime)
 

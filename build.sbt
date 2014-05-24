@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % "2.0.0",
   "org.twitter4j" % "twitter4j-core" % "4.0.1",
   "com.github.tototoshi" %% "slick-joda-mapper" % "1.1.0",
-  "org.webjars" % "angularjs" % "1.3.0-beta.8"
+  "org.webjars" % "angularjs" % "1.3.0-beta.8",
+  "mysql" % "mysql-connector-java" % "5.1.30"
 )     
 
 play.Project.playScalaSettings

@@ -61,7 +61,8 @@
     <br/>
     @{
             val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
-            val attendNum =  accountList.get(1).get.size
+            //val attendNum = if(accountList.get(1).nonEmpty) accountList.get(1).get.size else 0
+            val attendNum = accountList.get(1).map(_.size).getOrElse(0)
             val rest = ticketNum - attendNum
             val html = if(rest > 0){
                 <form method="post" action={routes.TicketController.openRestTicketInfo().toString}>

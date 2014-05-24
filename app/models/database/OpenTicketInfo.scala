@@ -4,7 +4,8 @@ package models.database
  * Created by FScoward on 2014/05/18.
  */
 import play.api.db.DB
-import scala.slick.driver.H2Driver.simple._
+//import scala.slick.driver.H2Driver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 import play.api.Play.current
 
 object OpenTicketInfos {
