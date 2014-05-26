@@ -6,10 +6,11 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import twitter4j.{TwitterException, TwitterFactory}
+import twitter4j.{Twitter, TwitterException, TwitterFactory}
 import play.api.cache.Cache
 import play.api.Play.current
 import java.util.UUID
+import twitter4j.auth.RequestToken
 
 object LoginController extends Controller {
   
