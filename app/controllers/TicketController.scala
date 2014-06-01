@@ -66,6 +66,9 @@ object TicketController extends Controller with AuthAction {
     Redirect(request.headers.get("Referer").get)
   }
 
+  /**
+   * 余りチケットの公開
+   * */
   def openRestTicketInfo = AuthAction{ uuid => implicit request =>
     val post = request.body.asFormUrlEncoded
     val eventId = post.get("eventId").head
@@ -75,11 +78,13 @@ object TicketController extends Controller with AuthAction {
     Redirect(request.headers.get("Referer").get)
   }
 
+  /**
+   * 公開チケットの情報取得
+   * */
   def viewOpenTicket = AuthAction{ uuid => implicit request =>
     val eventList: List[Event] = OpenTicketInfos.findAll
     val e: List[(Event, Int)] = eventList.map{ event => (event, restTicketNum(event.eventId)) }
-
-    Ok(views.html.tickets(e))
+    Ok(views.html.tickets(e.filter(_._2 > 0)))
   }
 
   def restTicketNum(eventId: String): Int = {
