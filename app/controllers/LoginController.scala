@@ -10,7 +10,7 @@ import twitter4j.{Twitter, TwitterException, TwitterFactory}
 import play.api.cache.Cache
 import play.api.Play.current
 import java.util.UUID
-import twitter4j.auth.RequestToken
+import twitter4j.auth.{AccessToken, RequestToken}
 
 object LoginController extends Controller {
   
@@ -20,6 +20,7 @@ object LoginController extends Controller {
       twitter.setOAuthAccessToken(null)
       val requestToken = twitter.getOAuthRequestToken
       val url = requestToken.getAuthorizationURL
+      Cache.set(requestToken.getToken, requestToken)
       Redirect(url)
     }catch {
       case e: TwitterException => Unauthorized(e.getMessage)
@@ -35,14 +36,15 @@ object LoginController extends Controller {
   def callback = Action { request =>
     request.getQueryString("oauth_verifier") match {
       case Some(oauthVerifier) => {
+        val oauthToken = request.getQueryString("oauth_token").get
+        val requestToken = Cache.getAs[RequestToken](oauthToken).get
         val twitter = TwitterFactory.getSingleton
-        val accessToken = twitter.getOAuthAccessToken(oauthVerifier)
+        val accessToken: AccessToken = twitter.getOAuthAccessToken(requestToken, oauthVerifier)
         val uuid = UUID.randomUUID.toString
         Cache.set(uuid, accessToken)
-        val screenName = twitter.getScreenName
+        val screenName = accessToken.getScreenName
         twitter.setOAuthAccessToken(null)
 
-        play.Logger.debug(screenName)
         if(models.database.Accounts.findAccountByAccount(screenName).size == 0){
           models.database.Accounts.insert(models.database.Account(screenName))
         }
