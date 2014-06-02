@@ -50,6 +50,11 @@ object TicketController extends Controller with AuthAction {
     )
   }
 
+  /**
+   * チケット情報の削除
+   *
+   * @param ticketId チケットID
+   * */
   def deleteTicket(ticketId: Int) = AuthAction{ uuid => implicit request =>
     Tickets.deleteTicketByTicketId(ticketId)
 
@@ -73,7 +78,6 @@ object TicketController extends Controller with AuthAction {
     val post = request.body.asFormUrlEncoded
     val eventId = post.get("eventId").head
     val isOpen = post.get("isOpen").head
-  play.Logger.debug(isOpen)
 
     if(isOpen == "true") {
       OpenTicketInfos.insert(eventId)
@@ -92,6 +96,11 @@ object TicketController extends Controller with AuthAction {
     Ok(views.html.tickets(e.filter(_._2 > 0)))
   }
 
+  /**
+   * 余剰チケット枚数
+   *
+   * @param eventId イベントID
+   * */
   def restTicketNum(eventId: String): Int = {
     val ticket = Tickets.findTicketByEventId(eventId)
     val attend = EventMembers.findByEventIdStatus(eventId)
