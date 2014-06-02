@@ -67,14 +67,19 @@ object TicketController extends Controller with AuthAction {
   }
 
   /**
-   * 余りチケットの公開
+   * 余りチケットの公開/非公開
    * */
   def openRestTicketInfo = AuthAction{ uuid => implicit request =>
     val post = request.body.asFormUrlEncoded
     val eventId = post.get("eventId").head
+    val isOpen = post.get("isOpen").head
+  play.Logger.debug(isOpen)
 
-    OpenTicketInfos.insert(eventId)
-
+    if(isOpen == "true") {
+      OpenTicketInfos.insert(eventId)
+    } else {
+      OpenTicketInfos.delete(eventId)
+    }
     Redirect(request.headers.get("Referer").get)
   }
 

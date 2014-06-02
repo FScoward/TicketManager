@@ -61,14 +61,15 @@
     <br/>
     @{
             val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
-            //val attendNum = if(accountList.get(1).nonEmpty) accountList.get(1).get.size else 0
             val attendNum = accountList.get(1).map(_.size).getOrElse(0)
             val rest = ticketNum - attendNum
             val html = if(rest > 0){
                 <form method="post" action={routes.TicketController.openRestTicketInfo().toString}>
                     {if(isOpenTicketInfo == true){
-                        <button name="eventId" value={event.eventId} class="btn btn-default" disabled="disabled">余剰チケット情報を公開する (余り: {rest} 枚)</button>
+                        <input type="hidden" name="isOpen" value="false" />
+                        <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を非公開にする (余り: {rest} 枚)</button>
                     }else{
+                        <input type="hidden" name="isOpen" value="true" />
                         <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を公開する (余り: {rest} 枚)</button>
                     }}
                 </form>
