@@ -24,11 +24,11 @@ object EventMembers {
   val database = Database.forDataSource(DB.getDataSource())
 
   class EventMembers(tag: Tag) extends Table[EventMember](tag, "EVENT_MEMBER") {
-    def eventId = column[String]("EVENT_ID")
-    def account = column[String]("ACCOUNT")
-    def authority = column[String]("AUTHORITY")
-    def attendStatus = column[Int]("ATTEND_STATUS")
-    def updateDate = column[LocalDateTime]("UPDATE_DATE")
+    def eventId = column[String]("EVENT_ID", O NotNull)
+    def account = column[String]("ACCOUNT", O NotNull)
+    def authority = column[String]("AUTHORITY", O NotNull)
+    def attendStatus = column[Int]("ATTEND_STATUS", O NotNull)
+    def updateDate = column[LocalDateTime]("UPDATE_DATE", O NotNull)
 
     def eventFK = foreignKey("event_fk", eventId, Events.events)(_.eventId, onDelete = ForeignKeyAction.Cascade)
     def accountFK = foreignKey("account_fk", account, Accounts.accounts)(_.account)

@@ -13,6 +13,7 @@ POST    /event/addAdmin             controllers.EventController.addAdministrator
 POST    /event/:eventId             controllers.EventController.attend(eventId: String)
 GET     /event/:eventId/ticket      controllers.TicketController.createTicket(eventId: String)
 
+GET     /ticket/search              controllers.TicketController.searchTicket
 POST    /ticket/delete              controllers.TicketController.deleteTicket(ticketId: Int)
 POST    /ticket/update              controllers.TicketController.updateTicketStatus
 POST    /ticket/open                controllers.TicketController.openRestTicketInfo

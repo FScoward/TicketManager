@@ -5,7 +5,6 @@ import play.api.db.DB
 import scala.slick.driver.MySQLDriver.simple._
 import play.api.Play.current
 import java.sql.Date
-
 /**
  * Created by FScoward on 2014/04/26.
  */
@@ -55,4 +54,5 @@ object Events {
   def deleteEvent(screenName: String, eventId: String) = database.withSession { implicit session: Session =>
     events.where(_.eventId === eventId).where(_.owner === screenName).delete
   }
+
 }

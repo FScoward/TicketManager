@@ -13,6 +13,7 @@ import models.database._
 import play.api.i18n.Messages
 import org.h2.jdbc.JdbcSQLException
 import models.database.Ticket
+import scala.slick.jdbc.StaticQuery0
 
 object TicketController extends Controller with AuthAction {
   val ticketForm = Form(
@@ -109,5 +110,17 @@ object TicketController extends Controller with AuthAction {
     }}.sum
     t - attend.length
   }
+
+  /**
+   * チケット検索
+   * */
+  def searchTicket = AuthAction { uuid => implicit request =>
+    val word = request.getQueryString("word").getOrElse("")
+    val list = Tickets.findTicketByWord(word)
+    val result: List[(Event, Int)] = list.map{ event => (event, restTicketNum(event.eventId))}
+
+    Ok(views.html.tickets(result.filter(_._2 > 0)))
+  }
+
 
 }

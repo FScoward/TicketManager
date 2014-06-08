@@ -2,7 +2,19 @@
 @main("tickets"){
 
 
-    検索
+    <div class="row">
+        <form method="get" action="@routes.TicketController.searchTicket()">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="input-group">
+                    <input type="search" name="word" class="form-control" required />
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-default">検索</button>
+                    </span>
+                </div>
+            </div>
+        </form>
+    </div>
+
 
     <ul class="list-group">
     @eventList.map{ event =>
