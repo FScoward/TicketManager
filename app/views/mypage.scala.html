@@ -7,17 +7,19 @@
 
     @template.eventList(eventList)
 
-    <ul class="pagination">
-        <li><a href="@routes.UserController.index(screenName.get, 1)">&laquo;</a></li>
-        @{
-            (1 to paginationCount).map{ page =>
-                if(page == now){
-                    <li class="active"><a href={routes.UserController.index(screenName.get, page).toString}>{page} <span class="sr-only">(current)</span></a></li>
-                }else{
-                    <li><a href={routes.UserController.index(screenName.get, page).toString}>{page} <span class="sr-only">(current)</span></a></li>
+    @if(paginationCount > 0) {
+        <ul class="pagination">
+            <li><a href="@routes.UserController.index(screenName.get, 1)">&laquo;</a></li>
+            @{
+                (1 to paginationCount).map{ page =>
+                    if(page == now){
+                        <li class="active"><a href={routes.UserController.index(screenName.get, page).toString}>{page} <span class="sr-only">(current)</span></a></li>
+                    }else{
+                        <li><a href={routes.UserController.index(screenName.get, page).toString}>{page} <span class="sr-only">(current)</span></a></li>
+                    }
                 }
             }
-        }
-        <li><a href="@routes.UserController.index(screenName.get, paginationCount)">&raquo;</a></li>
-    </ul>
+            <li><a href="@routes.UserController.index(screenName.get, paginationCount)">&raquo;</a></li>
+        </ul>
+    }
 }
