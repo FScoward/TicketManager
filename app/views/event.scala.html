@@ -84,7 +84,7 @@
                 if(x == event.owner) {
                     <form id="deleteEventForm" method="post" action={routes.EventController.deleteEvent().toString}>
                         <input type="hidden" id="eventId" name="eventId" value={event.eventId} />
-                        <button type="submit" class="btn btn-danger pull-right">DELETE THIS EVENT</button>
+                        <button type="submit" class="btn btn-danger pull-right">このイベントを削除する</button>
                     </form>
                 }
             }
