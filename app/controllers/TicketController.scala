@@ -115,12 +115,10 @@ object TicketController extends Controller with AuthAction {
    * チケット検索
    * */
   def searchTicket = AuthAction { uuid => implicit request =>
-    val word = request.getQueryString("word").getOrElse("")
+    val word = request.getQueryString("word").get
     val list = Tickets.findTicketByWord(word)
     val result: List[(Event, Int)] = list.map{ event => (event, restTicketNum(event.eventId))}
 
     Ok(views.html.tickets(result.filter(_._2 > 0)))
   }
-
-
 }
