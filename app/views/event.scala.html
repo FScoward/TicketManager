@@ -60,38 +60,37 @@
     </div>
     <br/>
     @{
-            val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
-            val attendNum = accountList.get(1).map(_.size).getOrElse(0)
-            val rest = ticketNum - attendNum
-            val html = if(rest > 0){
-                <form method="post" action={routes.TicketController.openRestTicketInfo().toString}>
-                    {if(isOpenTicketInfo == true){
-                        <input type="hidden" name="isOpen" value="false" />
-                        <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を非公開にする (余り: {rest} 枚)</button>
-                    }else{
-                        <input type="hidden" name="isOpen" value="true" />
-                        <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を公開する (余り: {rest} 枚)</button>
-                    }}
-                </form>
-            }else{""}
-            Html(html.toString)
-    }
+        val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
+        val attendNum = accountList.get(1).map(_.size).getOrElse(0)
+        val rest = ticketNum - attendNum
 
-    @{
         request.session.get("screenName") match {
-
             case Some(x) => {
-                if(x == event.owner) {
-                    <form id="deleteEventForm" method="post" action={routes.EventController.deleteEvent().toString}>
-                        <input type="hidden" id="eventId" name="eventId" value={event.eventId} />
-                        <button type="submit" class="btn btn-danger pull-right">このイベントを削除する</button>
+                val htmlOpenTicket = if(rest > 0){
+                    <form method="post" action={routes.TicketController.openRestTicketInfo().toString}>
+                        {if(isOpenTicketInfo == true){
+                            <input type="hidden" name="isOpen" value="false" />
+                            <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を非公開にする (余り: {rest} 枚)</button>
+                        }else{
+                            <input type="hidden" name="isOpen" value="true" />
+                            <button name="eventId" value={event.eventId} class="btn btn-default">余剰チケット情報を公開する (余り: {rest} 枚)</button>
+                        }}
                     </form>
+                }else{""}
+
+                val html2 = {
+                    if(x == event.owner) {
+                        <form id="deleteEventForm" method="post" action={routes.EventController.deleteEvent().toString}>
+                            <input type="hidden" id="eventId" name="eventId" value={event.eventId} />
+                            <button type="submit" class="btn btn-danger pull-right">このイベントを削除する</button>
+                        </form>
+                    }
                 }
+                Html(htmlOpenTicket.toString + html2)
             }
-
-            case None =>
+            case None => {
+            }
         }
-
     }
 
     <h4><span class="glyphicon glyphicon-ok-sign"></span> 参加メンバー一覧 <span class="badge">@accountList.get(1).map(_.size).getOrElse(0)</span></h4>
