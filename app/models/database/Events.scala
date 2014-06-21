@@ -48,7 +48,7 @@ object Events {
       e <- events if (e.eventId === em.eventId) && (em.account === screenName)
     } yield (e)
 
-    (query.drop(page * 10).take(10).list(), query.length.run)
+    (query.sortBy(_.eventDate).drop(page * 10).take(10).list(), query.length.run)
   }
 
   def deleteEvent(screenName: String, eventId: String) = database.withSession { implicit session: Session =>
