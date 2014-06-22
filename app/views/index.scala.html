@@ -4,6 +4,23 @@
         <h1>Ticket Manager</h1>
         <p>This is ticket management system.</p>
 
+        <p>こんなことありませんか？</p>
+        <ul>
+            <li>チケットが余ってしまって困った。</li>
+            <li>イベントの管理だけでなく、チケットの管理もしたい。</li>
+            <li>あのイベントのチケットは誰が持ってたっけ？</li>
+        </ul>
+        <p>ある程度グループが出来上がってきた時にチケットを管理しようとすると結構大変です。<br>
+        そんな面倒な管理をもっと楽にしてイベントを楽しむことに集中しましょう。</p>
+        <ul>
+            <li>チケットが余っていれば情報を公開するのもボタンひとつでOK。</li>
+            <li>イベント情報は公開/非公開を選べます。</li>
+            <li>非公開のイベントはURLを知っている人しかアクセスできないので、仲間内だけでのやりとりも可能です。</li>
+            <li>参加したいイベントがあるけど、チケットを持っていないという方は「チケットあるよ」から検索すれば欲しいチケットが見つけられるかも。</li>
+        </ul>
+
+        <p>行きたいライブがあるけど、一人じゃ嫌だ。という方は公開イベントを作って人を集めましょう!</p>
+
         @screenName match {
             case Some(s) => {
             }
@@ -20,7 +37,7 @@
 
 
     <div class="row" style="background-color: #EEE; border-radius: 6px; padding: 10px;">
-        <h2 style="colok: white;">Sample Image</h2>
+        <h2 class="bg-warning" style="border-radius: 6px;">Image</h2>
         <div class="col-md-6">
             <img src="@routes.Assets.at("images/eventPage.png")" alt="イベントページ" class="img-thumbnail">
         </div>
