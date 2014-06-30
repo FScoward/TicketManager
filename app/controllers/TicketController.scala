@@ -5,6 +5,7 @@ package controllers
  */
 
 import play.api._
+
 import play.api.mvc._
 import play.api.data.Form
 import play.api.data.Forms._
@@ -121,4 +122,29 @@ object TicketController extends Controller with AuthAction {
 
     Ok(views.html.tickets(result.filter(_._2 > 0)))
   }
-}
+  
+  /**
+   * オークション担当者登録
+   * */
+  def auction = AuthAction { uuid => implicit request =>
+    val exhibitNumber = request.getQueryString("exhibitNumber")
+    val responsible = request.getQueryString("responsible")
+    val eventId = request.getQueryString("eventId")
+    
+    // イベントに紐づけて出品チケット枚数、担当者を登録
+    if (exhibitNumber.isDefined && responsible.isDefined && eventId.isDefined) {
+      try{
+        Auctions.insert(Auction(eventId.get, responsible.get, exhibitNumber.get.toInt))
+        Redirect(request.headers.get("Referer").get)
+      } catch {
+        // 本当は MySQLIntegrityConstraintViolationException を拾う
+        case e: Exception => {
+          Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> "エラーが発生しました。(ユーザー名に間違いはありませんか？)")
+        }
+      }
+    } else {
+      Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> "エラーが発生しました。")
+    }
+  }
+  
+ }

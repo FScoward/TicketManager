@@ -10,6 +10,7 @@ GET     /event/:eventId             controllers.EventController.viewEvent(eventI
 POST    /event/comment              controllers.EventController.comment
 POST    /event/delete               controllers.EventController.deleteEvent
 POST    /event/addAdmin             controllers.EventController.addAdministrator
+GET     /event/auction/register     controllers.TicketController.auction
 POST    /event/:eventId             controllers.EventController.attend(eventId: String)
 GET     /event/:eventId/ticket      controllers.TicketController.createTicket(eventId: String)
 
