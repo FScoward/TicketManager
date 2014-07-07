@@ -145,5 +145,4 @@ object EventController extends Controller with AuthAction{
     Comments.insert(Comment(eventId = eventId, comment = comment, account = uuid))
     Redirect(routes.EventController.viewEvent(eventId))
   }
-
 }

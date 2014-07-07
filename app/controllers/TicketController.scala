@@ -15,6 +15,7 @@ import play.api.i18n.Messages
 import org.h2.jdbc.JdbcSQLException
 import models.database.Ticket
 import scala.slick.jdbc.StaticQuery0
+import scala.slick.lifted.Column
 
 object TicketController extends Controller with AuthAction {
   val ticketForm = Form(
@@ -106,10 +107,11 @@ object TicketController extends Controller with AuthAction {
   def restTicketNum(eventId: String): Int = {
     val ticket = Tickets.findTicketByEventId(eventId)
     val attend = EventMembers.findByEventIdStatus(eventId)
+    val auction = Auctions.countExhibitNumber(eventId).getOrElse(0)
     val t: Int = ticket.map{ t => {
       t.number
     }}.sum
-    t - attend.length
+    t - attend.length - auction
   }
 
   /**
@@ -146,5 +148,27 @@ object TicketController extends Controller with AuthAction {
       Redirect(request.headers.get("Referer").get).flashing("errorMessages" -> "エラーが発生しました。")
     }
   }
-  
- }
+
+  /**
+   * オークション状況の更新
+   * */
+  def changeAuctionStatus = AuthAction { uuid => implicit request =>
+    val post = request.body.asFormUrlEncoded
+    val eventId = post.get("eventId").head
+    val status = post.get("status").head.toInt
+
+    Auctions.updateStatus(eventId, uuid, status)
+    Redirect(request.headers.get("Referer").get)
+  }
+
+  /**
+   * オークション情報の削除
+   * */
+  def deleteAuction = AuthAction { uuid => implicit request =>
+    val post = request.body.asFormUrlEncoded
+    val eventId = post.get("eventId").head
+    Auctions.deleteAuction(eventId, uuid)
+
+    Redirect(request.headers.get("Referer").get)
+  }
+}

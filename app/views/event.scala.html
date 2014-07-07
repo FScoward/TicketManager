@@ -5,7 +5,6 @@
     commentList: List[models.database.Comment],
     auction: List[models.database.Auction],
     isOpenTicketInfo: Boolean
-
 )(implicit request: RequestHeader, flash: Flash)
 
 @display(accounts: Option[List[models.database.EventMember]], style: String) = {
@@ -26,7 +25,6 @@
     }
 }
 
-
 @main("event") {
     <script type="text/javascript">
     $(function(){
@@ -34,6 +32,9 @@
             return confirm("Really?");
         });
         $("#deleteEventForm").submit(function(event){
+            return confirm("Really?");
+        });
+        $("#deleteAuctionForm").submit(function(event){
             return confirm("Really?");
         });
     });
@@ -63,7 +64,8 @@
     @{
         val ticketNum = ticketInfo.filter(_.status == 2).map(_.number).sum
         val attendNum = accountList.get(1).map(_.size).getOrElse(0)
-        val rest = ticketNum - attendNum
+        val exhibitNum = auction.map(_.exhibitNumber).sum
+        val rest = ticketNum - attendNum - exhibitNum
 
         request.session.get("screenName") match {
             case Some(x) => {
@@ -242,7 +244,7 @@
                                 case 3 => "落選"
                             }}
                             @if(eventAdmins.contains(request.session.get("screenName").getOrElse(""))){
-                            <button type="submit" class="btn btn-danger btn-sm pull-right">
+                            <button type="submit" class="btn btn-danger btn-xs pull-right">
                                 <span class="glyphicon glyphicon-remove"></span>削除
                             </button>
                             }
@@ -278,42 +280,57 @@
         </div>
     }
     </div>
-    
-    <h3><span class="glyphicon glyphicon-transfer"></span> オークション管理</h3>
-    <form method="GET" action="@routes.TicketController.auction()">
-        <span class="glyphicon glyphicon-list-alt"></span>
-        <label for="exhibitNumber">枚数</label>
-        <select id="exhibitNumber" name="exhibitNumber">
-            @for(i <- 1 to 99) { 
-            <option value="@i">@i</option>
+
+@*** オークション管理 ***@
+    @if(request.session.get("screenName").isDefined) {
+        <h3><span class="glyphicon glyphicon-transfer"></span> オークション管理</h3>
+        <form method="GET" action="@routes.TicketController.auction()">
+            <span class="glyphicon glyphicon-list-alt"></span>
+            <label for="exhibitNumber">枚数</label>
+            <select id="exhibitNumber" name="exhibitNumber">
+                @for(i <- 1 to 99) {
+                <option value="@i">@i</option>
+                }
+            </select>
+
+            <span class="glyphicon glyphicon-user"></span>
+            <label for="responsible">担当者</label>
+            <input id="responsible" name="responsible" type="text" required>
+
+            <input type="hidden" name="eventId" value="@event.eventId">
+
+            <button type="submit" class="btn btn-primary btn-sm">登録</button>
+        </form>
+
+        <br>
+        @for(auc <- auction) {
+            <form method="POST" action="@routes.TicketController.changeAuctionStatus" class="form form-inline">
+                <input type="hidden" name="eventId" value="@event.eventId">
+            @auc.account / @auc.exhibitNumber 枚 /
+            @{
+                auc.status match {
+                    case 0 => Html("未出品 <button name='status' value='1' class='btn btn-info btn-xs'>出品</button>")
+                    case 1 => Html("出品中 <button name='status' value='2' class='btn btn-info btn-xs'>落札済</button>")
+                    case 2 => Html("落札(未送付)<button name='status' value='3' class='btn btn-info btn-xs'>送付済</button>")
+                    case 3 => "送付済(終了)"
+                    case _ =>
+                }
             }
-        </select>
-        
-        <span class="glyphicon glyphicon-user"></span>
-        <label for="responsible">担当者</label>
-        <input id="responsible" name="responsible" type="text" required>
-        
-        <input type="hidden" name="eventId" value="@event.eventId">
-        
-        <button type="submit" class="btn btn-primary">登録</button>
-    </form>
-    
-    @for(auc <- auction) {
-        @auc.account / @auc.exhibitNumber 枚 - 
-        <div class="progress">
-            <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="{@auc.status * 20}" aria-valuemin="0" aria-valuemax="100" style="width: {@auc.status * 20}%">
-                <span class="sr-only">{@auc.status * 20}% Complete</span>
+            </form>
+
+            <form id="deleteAuctionForm" method="post" action="@routes.TicketController.deleteAuction">
+                <input type="hidden" name="eventId" value="@event.eventId">
+                <button type="submit" class='btn btn-danger btn-xs pull-right'>削除</button>
+            </form>
+
+            <div class="progress">
+                <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow=@{(auc.status + 1) * 25} aria-valuemin="0" aria-valuemax="100" style="width: @{(auc.status + 1) * 25}%">
+                    <span class="sr-only">@{(auc.status + 1) * 25}% Complete</span>
+                    @{(auc.status + 1) * 25}%
+                </div>
             </div>
-        </div>
+        }
     }
-    
-    FScoward: 出品
-    <div class="progress">
-        <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
-            <span class="sr-only">40% Complete</span>
-        </div>
-    </div>
-    
 
     @{
         request.session.get("screenName") match {
@@ -329,17 +346,17 @@
         }
     }
     @for(comment <- commentList){
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                        <span class="glyphicon glyphicon-pencil"></span>
-                        @comment.account
-                        <div class="pull-right">
-                            @comment.createDate.toString("yyyy/MM/dd HH:mm:ss")
-                        </div>
-                </div>
-                <div class="panel-body">
-                    @Html(comment.comment.replace("\n", "<br/>"))
-                </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                    @comment.account
+                    <div class="pull-right">
+                        @comment.createDate.toString("yyyy/MM/dd HH:mm:ss")
+                    </div>
             </div>
+            <div class="panel-body">
+                @Html(comment.comment.replace("\n", "<br/>"))
+            </div>
+        </div>
     }
 }

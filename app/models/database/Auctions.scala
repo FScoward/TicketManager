@@ -30,6 +30,31 @@ object Auctions {
   }
   
   def countExhibitNumber(eventId: String) = database.withSession { implicit session: Session =>
-    auctions.where(_.eventId === eventId).map(_.exhibitNumber).sum
+    auctions.where(_.eventId === eventId).map(_.exhibitNumber).sum.run
   }
+
+  /**
+   * ステータス更新
+   * @param eventId イベントID
+   * @param account アカウント
+   * @param status 状態
+   * */
+  def updateStatus(eventId: String, account: String, status: Int) = database.withSession { implicit session: Session =>
+    auctions
+      .filter(_.eventId === eventId)
+      .filter(_.account === account)
+      .map(_.status).update(status)
+  }
+
+  /**
+   * オークション情報削除
+   * @param eventId イベントID
+   * @param account アカウント
+   * */
+  def deleteAuction(eventId: String, account: String) = database.withSession { implicit session: Session =>
+    auctions.where(_.eventId === eventId)
+      .where(_.account === account).delete
+  }
+
+
 }
